@@ -1,0 +1,5 @@
+[package]
+
+name = "dazeus-rs"
+version = "0.0.1"
+authors = ["Ruben Nijveld <ruben@gewooniets.nl>"]
