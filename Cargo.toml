@@ -1,5 +1,20 @@
 [package]
 
-name = "dazeus-rs"
+name = "dazeus"
 version = "0.0.1"
 authors = ["Ruben Nijveld <ruben@gewooniets.nl>"]
+description = "Dazeus IRC bot bindings for rust"
+
+[lib]
+
+name = "dazeus"
+path = "src/lib.rs"
+
+[dependencies.rustc-serialize]
+version = "0.3"
+
+[dependencies.promise]
+git = "https://github.com/viperscape/rust-promise.git"
+
+[dependencies.unix_socket]
+version = "0.1.1"
