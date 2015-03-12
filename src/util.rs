@@ -7,6 +7,21 @@ pub enum Connection {
     Tcp(TcpStream)
 }
 
+impl Connection {
+    pub fn try_clone(&self) -> Result<Connection> {
+        match *self {
+            Connection::Unix(ref stream) => match stream.try_clone() {
+                Ok(cloned) => Ok(Connection::Unix(cloned)),
+                Err(e) => Err(e)
+            },
+            Connection::Tcp(ref stream) => match stream.try_clone() {
+                Ok(cloned) => Ok(Connection::Tcp(cloned)),
+                Err(e) => Err(e)
+            }
+        }
+    }
+}
+
 impl Read for Connection {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
         match *self {

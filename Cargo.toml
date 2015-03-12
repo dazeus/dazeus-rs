@@ -17,4 +17,4 @@ version = "0.3"
 git = "https://github.com/viperscape/rust-promise.git"
 
 [dependencies.unix_socket]
-version = "0.1.1"
+git = "https://github.com/sfackler/rust-unix-socket.git"
