@@ -63,3 +63,9 @@ fn main() {
     }
 }
 ```
+
+Once you have set up your dependencies and created this main file you should be
+ready to go using `cargo run`, cargo should install all dependencies, compile
+your project and execute the result. If you don't have DaZeus running on your
+local machine, or if the default socket location is not what you're looking for,
+simply use `cargo run -- --socket=[your socket]`.
