@@ -1,7 +1,9 @@
 use std::io::{Read, Write};
 use std::sync::mpsc::{Sender, Receiver};
-use serialize::json::Json;
+use serialize::json::{ToJson, Json};
 use std::str::from_utf8;
+use super::{Response, Event, Request};
+use std::collections::VecDeque;
 
 pub struct Reader<T: Read> {
     socket: T,
@@ -118,6 +120,82 @@ impl<T: Write> Writer<T> {
                 },
                 _ => panic!("Channel was unexpectedly closed")
             }
+        }
+    }
+}
+
+pub struct Handler {
+    write_to: Sender<Json>,
+    event_to: Sender<Event>,
+    response_to: VecDeque<Sender<Response>>,
+}
+
+impl Handler {
+    pub fn new(write_to: Sender<Json>, event_to: Sender<Event>) -> Handler {
+        Handler {
+            write_to: write_to,
+            event_to: event_to,
+            response_to: VecDeque::new()
+        }
+    }
+
+    pub fn run(&mut self, read_from: Receiver<Json>, request_from: Receiver<(Request, Sender<Response>)>) {
+        loop {
+            select!(
+                data = read_from.recv() => {
+                    if !self.handle_socket_msg(data.unwrap()) {
+                        break;
+                    }
+                },
+                req = request_from.recv() => {
+                    let (request, respond_to) = req.unwrap();
+                    if !self.handle_request(request, respond_to) {
+                        break;
+                    }
+                }
+            )
+        }
+    }
+
+    fn handle_socket_msg(&mut self, data: Json) -> bool {
+        if Event::is_event(&data) {
+            self.handle_event(data)
+        } else {
+            self.handle_response(data)
+        }
+    }
+
+    fn handle_event(&self, data: Json) -> bool {
+        match Event::from_json(&data) {
+            Ok(evt) => match self.event_to.send(evt) {
+                Ok(_) => true,
+                Err(e) => panic!(e),
+            },
+            Err(e) => panic!(e),
+        }
+    }
+
+    fn handle_response(&mut self, data: Json) -> bool {
+        match Response::from_json(data) {
+            Ok(resp) => match self.response_to.pop_front() {
+                Some(sender) => match sender.send(resp) {
+                    Ok(_) => true,
+                    Err(e) => panic!(e),
+                },
+                None => panic!("Got a response, but there is nothing to repond to"),
+            },
+            Err(e) => panic!(e),
+        }
+    }
+
+    fn handle_request(&mut self, request: Request, respond_to: Sender<Response>) -> bool {
+        let json = request.to_json();
+        match self.write_to.send(json) {
+            Ok(_) => {
+                self.response_to.push_back(respond_to);
+                true
+            },
+            Err(e) => panic!(e),
         }
     }
 }
