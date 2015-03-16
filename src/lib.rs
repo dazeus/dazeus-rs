@@ -28,8 +28,8 @@ pub mod util;
 
 
 /// Methods that need to be implemented for sending commands to the server
-trait Commander {
-    fn subscribe(&mut self, events: &str, callback: &Fn(Event)) -> Future<Response>;
+pub trait Commander {
+    fn subscribe(&mut self, event: &str, callback: &Fn(Event)) -> Future<Response>;
     fn subscribe_command(&mut self, command: &str, callback: &Fn(Event)) -> Future<Response>;
     fn networks(&self) -> Future<Response>;
     fn channels(&self, network: &str) -> Future<Response>;
@@ -123,5 +123,31 @@ impl<'a> DaZeus<'a> {
                 Err(err) => panic!(err)
             }
         }
+    }
+
+    /// Subscribe to an event type and call the callback function every time such an event occurs
+    pub fn subscribe(&mut self, event: EventType, callback: &'a Fn(Event)) -> Future<Response> {
+        let request = match event {
+            EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
+            _ => Request::Subscribe(event.to_string()),
+        };
+
+        if !self.listeners.contains_key(&event) {
+            self.listeners.insert(event.clone(), Vec::new());
+        }
+
+        // borrow listeners only for adding the listener callback
+        {
+            let mut listeners = self.listeners.get_mut(&event).unwrap();
+            listeners.push(callback);
+        }
+
+        // because we can't have a mutable borrow when borrowing immutable over here
+        self.send(request)
+    }
+
+    /// Subscribe to a command and call the callback function every time such a command occurs
+    pub fn subscribe_command(&mut self, command: &str, callback: &'a Fn(Event)) -> Future<Response> {
+        self.subscribe(EventType::Command(String::from_str(command)), callback)
     }
 }
