@@ -2,7 +2,7 @@
 Rust bindings for DaZeus
 
 ## Getting started
-Obviously you will need [Rust][http://www.rust-lang.org], at the time of this
+Obviously you will need [Rust](http://www.rust-lang.org), at the time of this
 writing this means you will need the latest nightlies, but as soon as 1.0 is
 available, a stable version should work just fine as well.
 
