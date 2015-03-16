@@ -11,8 +11,5 @@ path = "src/lib.rs"
 [dependencies.rustc-serialize]
 version = "0.3"
 
-[dependencies.promise]
-git = "https://github.com/viperscape/rust-promise.git"
-
 [dependencies.unix_socket]
 git = "https://github.com/sfackler/rust-unix-socket.git"
