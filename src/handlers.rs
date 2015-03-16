@@ -37,7 +37,7 @@ impl<T: Read> Reader<T> {
             Ok(bytes) => {
                 self.buffer.push_all(&buf[..bytes]);
             },
-            Err(e) => panic!(e),
+            Err(e) => panic!("Could not retrieve bytes from socket: {}", e),
         }
     }
 
@@ -84,11 +84,11 @@ impl<T: Read> Reader<T> {
             Ok(s) => {
                 let res = Json::from_str(s).unwrap();
                 match self.actions.send(res) {
-                    Err(e) => panic!(e),
+                    Err(e) => panic!("Could not send received message: {}", e),
                     _ => ()
                 }
             },
-            Err(e) => panic!(e)
+            Err(e) => panic!("Could not convert received message to utf-8: {}", e)
         }
     }
 }
@@ -111,14 +111,14 @@ impl<T: Write> Writer<T> {
                     let len = encoded.bytes().len();
                     let message = format!("{}{}", len, encoded);
                     match self.socket.write_all(message.as_bytes()) {
-                        Err(e) => panic!(e),
+                        Err(e) => panic!("Could not write message to socket: {}", e),
                         _ => match self.socket.flush() {
-                            Err(e) => panic!(e),
+                            Err(e) => panic!("Could not flush socket: {}", e),
                             _ => ()
                         }
                     }
                 },
-                _ => panic!("Channel was unexpectedly closed")
+                _ => panic!("Channel receiving messages to be sent was unexpectedly closed")
             }
         }
     }
@@ -169,9 +169,9 @@ impl Handler {
         match Event::from_json(&data) {
             Ok(evt) => match self.event_to.send(evt) {
                 Ok(_) => true,
-                Err(e) => panic!(e),
+                Err(e) => panic!("Could not send event back to controller: {}", e),
             },
-            Err(e) => panic!(e),
+            Err(e) => panic!("Got an invalid json event: {}", e),
         }
     }
 
@@ -180,11 +180,13 @@ impl Handler {
             Ok(resp) => match self.response_to.pop_front() {
                 Some(sender) => match sender.send(resp) {
                     Ok(_) => true,
-                    Err(e) => panic!(e),
+                    // We'll just ignore this response if the future containing the response
+                    // channel was discarded.
+                    Err(_) => true,
                 },
                 None => panic!("Got a response, but there is nothing to repond to"),
             },
-            Err(e) => panic!(e),
+            Err(e) => panic!("Got an invalid json response: {}", e),
         }
     }
 
@@ -195,7 +197,7 @@ impl Handler {
                 self.response_to.push_back(respond_to);
                 true
             },
-            Err(e) => panic!(e),
+            Err(e) => panic!("Could not send message to be written on the socket: {}", e),
         }
     }
 }

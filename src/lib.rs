@@ -31,37 +31,37 @@ pub mod util;
 trait Commander {
     fn subscribe(&mut self, events: &str, callback: &Fn(Event)) -> Future<Response>;
     fn subscribe_command(&mut self, command: &str, callback: &Fn(Event)) -> Future<Response>;
-    fn networks(&mut self) -> Future<Response>;
-    fn channels(&mut self, network: &str) -> Future<Response>;
-    fn message(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn notice(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn ctcp(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn ctcp_reply(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn action(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn reply(&mut self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn send_names(&mut self, network: &str, channel: &str) -> Future<Response>;
-    fn names(&mut self, network: &str, channel: &str) -> Future<Event>;
-    fn send_whois(&mut self, network: &str, nick: &str) -> Future<Response>;
-    fn whois(&mut self, network: &str, nick: &str) -> Future<Event>;
-    fn join(&mut self, network: &str, channel: &str) -> Future<Response>;
-    fn part(&mut self, network: &str, channel: &str) -> Future<Response>;
-    fn nick(&mut self, network: &str) -> Future<Response>;
-    fn handshake(&mut self, name: &str, version: &str, config: Option<&str>) -> Future<Response>;
-    fn get_config(&mut self, group: &str, name: &str) -> Future<Response>;
-    fn get_property(&mut self, name: &str, scope: Scope) -> Future<Response>;
-    fn set_property(&mut self, name: &str, value: &str, scope: Scope) -> Future<Response>;
-    fn unset_property(&mut self, name: &str, name: &str, scope: Scope) -> Future<Response>;
-    fn get_property_keys(&mut self, prefix: &str, scope: Scope) -> Future<Response>;
-    fn set_permission(&mut self, permission: &str, allow: bool, scope: Scope) -> Future<Response>;
-    fn has_permission(&mut self, permission: &str, default: bool, scope: Scope) -> Future<Response>;
-    fn unset_permission(&mut self, permission: &str, scope: Scope) -> Future<Response>;
+    fn networks(&self) -> Future<Response>;
+    fn channels(&self, network: &str) -> Future<Response>;
+    fn message(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn notice(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn ctcp(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn ctcp_reply(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn action(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn reply(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
+    fn send_names(&self, network: &str, channel: &str) -> Future<Response>;
+    fn names(&self, network: &str, channel: &str) -> Future<Event>;
+    fn send_whois(&self, network: &str, nick: &str) -> Future<Response>;
+    fn whois(&self, network: &str, nick: &str) -> Future<Event>;
+    fn join(&self, network: &str, channel: &str) -> Future<Response>;
+    fn part(&self, network: &str, channel: &str) -> Future<Response>;
+    fn nick(&self, network: &str) -> Future<Response>;
+    fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Future<Response>;
+    fn get_config(&self, group: &str, name: &str) -> Future<Response>;
+    fn get_property(&self, name: &str, scope: Scope) -> Future<Response>;
+    fn set_property(&self, name: &str, value: &str, scope: Scope) -> Future<Response>;
+    fn unset_property(&self, name: &str, name: &str, scope: Scope) -> Future<Response>;
+    fn get_property_keys(&self, prefix: &str, scope: Scope) -> Future<Response>;
+    fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Future<Response>;
+    fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Future<Response>;
+    fn unset_permission(&self, permission: &str, scope: Scope) -> Future<Response>;
 }
 
 /// The base DaZeus struct
 pub struct DaZeus<'a> {
     event_rx: Receiver<Event>,
     request_tx: Sender<(Request, Sender<Response>)>,
-    listeners: HashMap<EventType, Vec<&'a FnMut(Event)>>,
+    listeners: HashMap<EventType, Vec<&'a Fn(Event)>>,
 }
 
 impl<'a> DaZeus<'a> {
@@ -98,13 +98,21 @@ impl<'a> DaZeus<'a> {
     /// Send a new Json packet to DaZeus
     pub fn send(&self, data: Request) -> Future<Response> {
         let (response_tx, response_rx) = channel();
-        self.request_tx.send((data, response_tx));
+        match self.request_tx.send((data, response_tx)) {
+            Err(e) => panic!(e),
+            Ok(_) => (),
+        }
         Future::from_receiver(response_rx)
     }
 
     /// Handle an event received
     fn handle_event(&self, event: Event) {
-
+        if self.listeners.contains_key(&event.event) {
+            let listeners = self.listeners.get(&event.event).unwrap();
+            for listener in listeners {
+                (**listener)(event.clone());
+            }
+        }
     }
 
     /// Loop wait for messages to receive in a blocking way
