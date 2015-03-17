@@ -27,9 +27,11 @@ Then start by using this basic skeleton application in your `main.rs`:
 extern crate dazeus;
 extern crate docopt;
 
-use docopt::Docopt;
-use dazeus::DaZeus;
 use dazeus::util::connection_from_str;
+use dazeus::{DaZeus, Commander, EventType};
+use docopt::Docopt;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 // Write the Docopt usage string.
 static USAGE: &'static str = "
@@ -51,9 +53,13 @@ fn main() {
 
     match connection_from_str(socket) {
         Ok(connection) => {
-            let dazeus = DaZeus::from_conn_buff(connection);
+            // we create an Rc-RefCell here so we can easily use DaZeus from within callbacks
+            let dazeus = Rc::new(RefCell::new(DaZeus::from_conn_buff(connection)));
 
-            // set up some listeners here
+            // set up some listeners here, eg:
+            dazeus.subscribe(EventType::PrivMsg, |evt| {
+                dazeus.message(&evt.params[0][..], &evt.params[1][..], "Hello there!");
+            });
 
             dazeus.listen();
         },
