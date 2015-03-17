@@ -27,8 +27,7 @@ Then start by using this basic skeleton application in your `main.rs`:
 extern crate dazeus;
 extern crate docopt;
 
-use dazeus::util::connection_from_str;
-use dazeus::{DaZeus, Commander, EventType};
+use dazeus::{DaZeus, Commander, EventType, connection_from_str};
 use docopt::Docopt;
 use std::cell::RefCell;
 use std::rc::Rc;

@@ -5,27 +5,28 @@ extern crate "rustc-serialize" as serialize;
 extern crate unix_socket;
 
 
+pub use self::connection::connection_from_str;
 pub use self::event::*;
-pub use self::response::*;
 pub use self::request::*;
+pub use self::response::*;
 pub use self::scope::*;
+use self::connection::Connection;
 use self::handlers::{Reader, Writer, Handler};
-use self::util::Connection;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io::{Read, Write, BufStream};
 use std::sync::Future;
 use std::sync::mpsc::{Sender, Receiver, channel};
 use std::thread;
-use std::cell::RefCell;
 
 
+mod connection;
 mod event;
 mod handlers;
 mod request;
 mod response;
 mod scope;
 pub mod error;
-pub mod util;
 
 
 /// Methods that need to be implemented for sending commands to the server
@@ -57,6 +58,7 @@ pub trait Commander {
     fn listen(&self);
 }
 
+
 /// More useful methods that can be used by a commander
 pub trait CommanderExt {
     fn reply(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
@@ -64,12 +66,14 @@ pub trait CommanderExt {
     fn whois(&self, network: &str, nick: &str) -> Future<Event>;
 }
 
+
 /// The base DaZeus struct
 pub struct DaZeus<'a> {
     event_rx: Receiver<Event>,
     request_tx: Sender<(Request, Sender<Response>)>,
     listeners: RefCell<HashMap<EventType, Vec<Box<Fn(Event) + 'a>>>>,
 }
+
 
 impl<'a> DaZeus<'a> {
     /// Create a new instance of DaZeus from the given connection
@@ -123,6 +127,7 @@ impl<'a> DaZeus<'a> {
         }
     }
 }
+
 
 impl<'a> Commander for DaZeus<'a> {
     /// Loop wait for messages to receive in a blocking way
@@ -310,6 +315,7 @@ impl<'a> Commander for DaZeus<'a> {
         self.send(Request::UnsetPermission(String::from_str(permission), scope))
     }
 }
+
 
 impl<'a> Commander for RefCell<DaZeus<'a>> {
     /// Loop wait for messages to receive in a blocking way
