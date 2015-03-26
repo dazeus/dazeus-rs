@@ -1,7 +1,7 @@
 //! DaZeus IRC bot bindings for rust
-#![feature(io, std_misc, net, collections)]
+#![feature(io, std_misc, collections)]
 
-extern crate "rustc-serialize" as serialize;
+extern crate rustc_serialize as serialize;
 extern crate unix_socket;
 
 
