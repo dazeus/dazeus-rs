@@ -1,11 +1,12 @@
 use std::str::FromStr;
 use serialize::json::Json;
 use super::error::InvalidJsonError;
+use std::ops::Index;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseEventTypeError { _priv: () }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum EventType {
     Action,
     ActionMe,
@@ -130,6 +131,10 @@ impl Event {
         }
     }
 
+    pub fn for_event(event: EventType, params: Vec<String>) -> Event {
+        Event { event: event, params: params }
+    }
+
     fn create_event(evt: &str, params: &Vec<Json>) -> Result<Event, InvalidJsonError> {
         if evt == "COMMAND" {
             if params.len() >= 4 && params[3].is_string() {
@@ -158,5 +163,17 @@ impl Event {
 
     pub fn is_event(data: &Json) -> bool {
         data.is_object() && data.as_object().unwrap().contains_key("event")
+    }
+
+    pub fn param<'a>(&'a self, idx: usize) -> &'a str {
+        &self.params[idx][..]
+    }
+}
+
+impl<'b> Index<usize> for Event {
+    type Output = str;
+
+    fn index<'a>(&'a self, index: usize) -> &'a str {
+        self.param(index)
     }
 }

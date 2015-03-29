@@ -82,6 +82,7 @@ impl<T: Read> Reader<T> {
 
         match from_utf8(message) {
             Ok(s) => {
+                debug!("Received message: {}", s);
                 let res = Json::from_str(s).unwrap();
                 match self.actions.send(res) {
                     Err(e) => panic!("Could not send received message: {}", e),
@@ -108,6 +109,7 @@ impl<T: Write> Writer<T> {
             match self.actions.recv() {
                 Ok(data) => {
                     let encoded = data.to_string();
+                    debug!("Sending message: {}", encoded);
                     let len = encoded.bytes().len();
                     let message = format!("{}{}", len, encoded);
                     match self.socket.write_all(message.as_bytes()) {

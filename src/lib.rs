@@ -1,19 +1,21 @@
 //! DaZeus IRC bot bindings for rust
-#![feature(io, std_misc, collections)]
+#![feature(io, std_misc, collections, slice_patterns)]
 
+#[macro_use]
+extern crate log;
 extern crate rustc_serialize as serialize;
 extern crate unix_socket;
 
-
 pub use self::connection::connection_from_str;
 pub use self::event::*;
+pub use self::listener::ListenerHandle;
 pub use self::request::*;
 pub use self::response::*;
 pub use self::scope::*;
 use self::connection::Connection;
 use self::handlers::{Reader, Writer, Handler};
-use std::cell::RefCell;
-use std::collections::HashMap;
+use self::listener::Listener;
+use std::cell::{Cell, RefCell};
 use std::io::{Read, Write, BufStream};
 use std::sync::Future;
 use std::sync::mpsc::{Sender, Receiver, channel};
@@ -23,6 +25,7 @@ use std::thread;
 mod connection;
 mod event;
 mod handlers;
+mod listener;
 mod request;
 mod response;
 mod scope;
@@ -31,8 +34,11 @@ pub mod error;
 
 /// Methods that need to be implemented for sending commands to the server
 pub trait Commander {
-    fn subscribe<F>(&self, event: EventType, callback: F) -> Future<Response> where F: Fn(Event);
-    fn subscribe_command<F>(&self, command: &str, callback: F) -> Future<Response> where F: Fn(Event);
+    fn subscribe<F>(&self, event: EventType, callback: F) -> (ListenerHandle, Future<Response>) where F: FnMut(Event);
+    fn subscribe_command<F>(&self, command: &str, callback: F) -> (ListenerHandle, Future<Response>) where F: FnMut(Event);
+    fn unsubscribe(&self, handle: ListenerHandle) -> Future<Response>;
+    fn unsubscribe_all(&self, event: EventType) -> Future<Response>;
+    fn has_any_subscription(&self, event: EventType) -> bool;
     fn networks(&self) -> Future<Response>;
     fn channels(&self, network: &str) -> Future<Response>;
     fn message(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
@@ -55,23 +61,20 @@ pub trait Commander {
     fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Future<Response>;
     fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Future<Response>;
     fn unset_permission(&self, permission: &str, scope: Scope) -> Future<Response>;
+    fn whois(&self, network: &str, nick: &str) -> Event;
+    fn names(&self, network: &str, channel: &str) -> Event;
+    fn reply(&self, event: &Event, message: &str, highlight: bool) -> Future<Response>;
+    fn reply_with_action(&self, event: &Event, message: &str) -> Future<Response>;
+    fn reply_with_notice(&self, event: &Event, message: &str) -> Future<Response>;
     fn listen(&self);
 }
-
-
-/// More useful methods that can be used by a commander
-pub trait CommanderExt {
-    fn reply(&self, network: &str, channel: &str, message: &str) -> Future<Response>;
-    fn names(&self, network: &str, channel: &str) -> Future<Event>;
-    fn whois(&self, network: &str, nick: &str) -> Future<Event>;
-}
-
 
 /// The base DaZeus struct
 pub struct DaZeus<'a> {
     event_rx: Receiver<Event>,
     request_tx: Sender<(Request, Sender<Response>)>,
-    listeners: RefCell<HashMap<EventType, Vec<Box<Fn(Event) + 'a>>>>,
+    listeners: RefCell<Vec<Listener<'a>>>,
+    current_handle: Cell<ListenerHandle>,
 }
 
 
@@ -103,27 +106,47 @@ impl<'a> DaZeus<'a> {
         thread::spawn(move || { writer.run(); });
         thread::spawn(move || { handler.run(read_rx, request_rx); });
 
-        DaZeus { event_rx: event_rx, request_tx: request_tx, listeners: RefCell::new(HashMap::new()) }
+        DaZeus {
+            event_rx: event_rx,
+            request_tx: request_tx,
+            listeners: RefCell::new(Vec::new()),
+            current_handle: Cell::new(1),
+        }
     }
 
-    /// Send a new Json packet to DaZeus
-    pub fn send(&self, data: Request) -> Future<Response> {
+    /// Send a new Json packet to DaZeus and return the channel on which a response will be written
+    fn send_to(&self, data: Request) -> Receiver<Response> {
         let (response_tx, response_rx) = channel();
         match self.request_tx.send((data, response_tx)) {
             Err(e) => panic!(e),
             Ok(_) => (),
         }
-        Future::from_receiver(response_rx)
+        response_rx
+    }
+
+    /// Send a new Json packet to DaZeus and retrieve a Future for responding
+    pub fn send(&self, data: Request) -> Future<Response> {
+        Future::from_receiver(self.send_to(data))
     }
 
     /// Handle an event received
     fn handle_event(&self, event: Event) {
-        if self.listeners.borrow().contains_key(&event.event) {
-            let liststack = self.listeners.borrow();
-            let listeners = liststack.get(&event.event).unwrap();
-            for listener in listeners {
-                (**listener)(event.clone());
+        for listener in self.listeners.borrow_mut().iter_mut() {
+            if listener.event == event.event {
+                listener.call(event.clone());
             }
+        }
+    }
+
+    /// Retrieve the next event (blocking)
+    /// All listeners will have been called already
+    pub fn next_event(&self) -> Event {
+        match self.event_rx.recv() {
+            Ok(event) => {
+                self.handle_event(event.clone());
+                event
+            },
+            Err(e) => panic!(e),
         }
     }
 }
@@ -133,42 +156,75 @@ impl<'a> Commander for DaZeus<'a> {
     /// Loop wait for messages to receive in a blocking way
     fn listen(&self) {
         loop {
-            match self.event_rx.recv() {
-                Ok(event) => self.handle_event(event),
-                Err(err) => panic!(err)
-            }
+            let _ = self.next_event();
         }
     }
 
     /// Subscribe to an event type and call the callback function every time such an event occurs
-    fn subscribe<F>(&self, event: EventType, callback: F) -> Future<Response>
-        where F: Fn(Event) + 'a
+    fn subscribe<F>(&self, event: EventType, callback: F) -> (ListenerHandle, Future<Response>)
+        where F: FnMut(Event) + 'a
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
             _ => Request::Subscribe(event.to_string()),
         };
 
-        if !self.listeners.borrow().contains_key(&event) {
-            self.listeners.borrow_mut().insert(event.clone(), Vec::new());
-        }
+        let handle = self.current_handle.get();
+        self.current_handle.set(handle + 1);
+        let listener = Listener::new(handle, event, callback);
 
-        // borrow listeners only for adding the listener callback
-        {
-            let mut liststack = self.listeners.borrow_mut();
-            let mut listeners = liststack.get_mut(&event).unwrap();
-            listeners.push(Box::new(callback));
-        }
-
-        // because we can't have a mutable borrow when borrowing immutable over here
-        self.send(request)
+        let mut listeners = self.listeners.borrow_mut();
+        listeners.push(listener);
+        (handle, self.send(request))
     }
 
     /// Subscribe to a command and call the callback function every time such a command occurs
-    fn subscribe_command<F>(&self, command: &str, callback: F) -> Future<Response>
-        where F: Fn(Event) + 'a
+    fn subscribe_command<F>(&self, command: &str, callback: F) -> (ListenerHandle, Future<Response>)
+        where F: FnMut(Event) + 'a
     {
         self.subscribe(EventType::Command(String::from_str(command)), callback)
+    }
+
+    /// Unsubscribe a listener for some event
+    fn unsubscribe(&self, handle: ListenerHandle) -> Future<Response> {
+        let mut listeners = self.listeners.borrow_mut();
+
+        // first find the event type
+        let event = {
+            match listeners.iter().find(|&ref l| l.has_handle(handle)) {
+                Some(listener) => Some(listener.event.clone()),
+                None => None,
+            }
+        };
+
+        listeners.retain(|&ref l| !l.has_handle(handle));
+        match event {
+            // we can't unsubscribe commands
+            Some(EventType::Command(_)) => Future::from_value(Response::for_success()),
+
+            // unsubscribe if there are no more listeners for the event
+            Some(evt) => match listeners.iter().any(|&ref l| l.event == evt) {
+                false => self.send(Request::Unsubscribe(evt.to_string())),
+                true => Future::from_value(Response::for_success()),
+            },
+
+            None => Future::from_value(Response::from_fail("Could not find listener with given handle")),
+        }
+    }
+
+    /// Remove all subscriptions for a specific event type
+    fn unsubscribe_all(&self, event: EventType) -> Future<Response> {
+        let mut listeners = self.listeners.borrow_mut();
+        listeners.retain(|&ref l| l.event != event);
+        match event {
+            EventType::Command(_) => Future::from_value(Response::for_success()),
+            _ => self.send(Request::Unsubscribe(event.to_string())),
+        }
+    }
+
+    /// Check if there is any active listener for the given event type
+    fn has_any_subscription(&self, event: EventType) -> bool {
+        self.listeners.borrow().iter().any(|&ref l| l.event == event)
     }
 
     /// Retrieve the networks the bot is connected to
@@ -314,6 +370,98 @@ impl<'a> Commander for DaZeus<'a> {
     fn unset_permission(&self, permission: &str, scope: Scope) -> Future<Response> {
         self.send(Request::UnsetPermission(String::from_str(permission), scope))
     }
+
+    /// Send a whois request and wait for an event that answers this request (blocking)
+    fn whois(&self, network: &str, nick: &str) -> Event {
+        if !self.has_any_subscription(EventType::Whois) {
+            self.send(Request::Subscribe(EventType::Whois.to_string()));
+        }
+        self.send_whois(network, nick);
+
+        loop {
+            let evt = self.next_event();
+            match evt.event {
+                EventType::Whois if &evt[0] == network && &evt[2] == nick => {
+                    if !self.has_any_subscription(EventType::Whois) {
+                        self.send(Request::Unsubscribe(EventType::Whois.to_string()));
+                    }
+                    return evt;
+                },
+                _ => (),
+            }
+        }
+    }
+
+    /// Send a names request and wait for an event that answers this request (blocking)
+    fn names(&self, network: &str, channel: &str) -> Event {
+        if !self.has_any_subscription(EventType::Names) {
+            self.send(Request::Subscribe(EventType::Names.to_string()));
+        }
+        self.send_names(network, channel);
+
+        loop {
+            let evt = self.next_event();
+            match evt.event {
+                EventType::Names if &evt[0] == network && &evt[2] == channel => {
+                    if !self.has_any_subscription(EventType::Names) {
+                        self.send(Request::Unsubscribe(EventType::Names.to_string()));
+                    }
+                    return evt;
+                },
+                _ => (),
+            }
+        }
+    }
+
+    /// Send a reply in response to some event
+    fn reply(&self, event: &Event, message: &str, highlight: bool) -> Future<Response> {
+        if let Some((network, channel, user)) = targets_for_event(event) {
+            let resp = self.nick(network).into_inner();
+            let nick = resp.get_str_or("nick", "");
+            if channel == nick {
+                self.message(network, user, message)
+            } else {
+                if highlight {
+                    let msg = format!("{}: {}", user, message);
+                    self.message(network, channel, &msg[..])
+                } else {
+                    self.message(network, channel, message)
+                }
+            }
+        } else {
+            Future::from_value(Response::from_fail("Not an event to reply to"))
+        }
+    }
+
+    /// Send a reply (as a notice) in response to some event
+    fn reply_with_notice(&self, event: &Event, message: &str) -> Future<Response> {
+        if let Some((network, channel, user)) = targets_for_event(event) {
+            let resp = self.nick(network).into_inner();
+            let nick = resp.get_str_or("nick", "");
+            if channel == nick {
+                self.notice(network, user, message)
+            } else {
+                self.notice(network, channel, message)
+            }
+        } else {
+            Future::from_value(Response::from_fail("Not an event to reply to"))
+        }
+    }
+
+    /// Send a reply (as a ctcp action) in response to some event
+    fn reply_with_action(&self, event: &Event, message: &str) -> Future<Response> {
+        if let Some((network, channel, user)) = targets_for_event(event) {
+            let resp = self.nick(network).into_inner();
+            let nick = resp.get_str_or("nick", "");
+            if channel == nick {
+                self.action(network, user, message)
+            } else {
+                self.action(network, channel, message)
+            }
+        } else {
+            Future::from_value(Response::from_fail("Not an event to reply to"))
+        }
+    }
 }
 
 
@@ -324,17 +472,32 @@ impl<'a> Commander for RefCell<DaZeus<'a>> {
     }
 
     /// Subscribe to an event type and call the callback function every time such an event occurs
-    fn subscribe<F>(&self, event: EventType, callback: F) -> Future<Response>
-        where F: Fn(Event) + 'a
+    fn subscribe<F>(&self, event: EventType, callback: F) -> (ListenerHandle, Future<Response>)
+        where F: FnMut(Event) + 'a
     {
         self.borrow().subscribe(event, callback)
     }
 
     /// Subscribe to a command and call the callback function every time such a command occurs
-    fn subscribe_command<F>(&self, command: &str, callback: F) -> Future<Response>
-        where F: Fn(Event) + 'a
+    fn subscribe_command<F>(&self, command: &str, callback: F) -> (ListenerHandle, Future<Response>)
+        where F: FnMut(Event) + 'a
     {
         self.borrow().subscribe_command(command, callback)
+    }
+
+    /// Unsubscribe a listener for some event
+    fn unsubscribe(&self, handle: ListenerHandle) -> Future<Response> {
+        self.borrow().unsubscribe(handle)
+    }
+
+    /// Remove all subscriptions for a specific event type
+    fn unsubscribe_all(&self, event: EventType) -> Future<Response> {
+        self.borrow().unsubscribe_all(event)
+    }
+
+    /// Check if there is any active listener for the given event type
+    fn has_any_subscription(&self, event: EventType) -> bool {
+        self.borrow().has_any_subscription(event)
     }
 
     /// Retrieve the networks the bot is connected to
@@ -448,5 +611,43 @@ impl<'a> Commander for RefCell<DaZeus<'a>> {
     /// Remove a set permission from the bot
     fn unset_permission(&self, permission: &str, scope: Scope) -> Future<Response> {
         self.borrow().unset_permission(permission, scope)
+    }
+
+    /// Send a whois request and wait for an event that answers this request (blocking)
+    fn whois(&self, network: &str, nick: &str) -> Event {
+        self.borrow().whois(network, nick)
+    }
+
+    /// Send a names request and wait for an event that answers this request (blocking)
+    fn names(&self, network: &str, channel: &str) -> Event {
+        self.borrow().names(network, channel)
+    }
+
+    /// Send a reply in response to some event
+    fn reply(&self, event: &Event, message: &str, highlight: bool) -> Future<Response> {
+        self.borrow().reply(event, message, highlight)
+    }
+
+    /// Send a reply (as a notice) in response to some event
+    fn reply_with_notice(&self, event: &Event, message: &str) -> Future<Response> {
+        self.borrow().reply_with_notice(event, message)
+    }
+
+    /// Send a reply (as a ctcp action) in response to some event
+    fn reply_with_action(&self, event: &Event, message: &str) -> Future<Response> {
+        self.borrow().reply_with_action(event, message)
+    }
+}
+
+fn targets_for_event(event: &Event) -> Option<(&str, &str, &str)> {
+    let params = &event.params;
+    match event.event {
+        EventType::Join
+        | EventType::Part
+        | EventType::PrivMsg
+        | EventType::Notice
+        | EventType::Ctcp
+        | EventType::Action => Some((&params[0][..], &params[2][..], &params[1][..])),
+        _ => None,
     }
 }
