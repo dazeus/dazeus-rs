@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Response","The response from a command send to the DaZeus server."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["InvalidJsonError","Error returned when the passed Json did not have the required structure."],["ParseConfigGroupError","Error returned when a string could not be parsed as a `ConfigGroup`."],["ParseEventTypeError","Error returned when a string could not be parsed as an `EventType`."]]});

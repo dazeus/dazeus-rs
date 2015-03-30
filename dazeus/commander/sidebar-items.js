@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Commander","Methods that need to be implemented for sending commands to the server"]]});

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `dazeus` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, dazeus">
+
+    <title>dazeus - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'dazeus', ty: 'mod', relpath: '../'};</script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>dazeus</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/dazeus/lib.rs.html#1-101'>[src]</a></span></h1>
+<div class='docblock'><p>DaZeus IRC bot bindings for <a href="http://www.rust-lang.org/">Rust</a>.</p>
+
+<p>For using these bindings you will need to setup a <a href="https://github.com/dazeus/dazeus-core">dazeus-core</a>
+instance. For users using OSX and Homebrew, a <a href="https://github.com/rnijveld/homebrew-dazeus">tap is available</a>.</p>
+
+<p>The best way to get started is by using the <code>connection_from_str</code> function provided. It allows
+the creation of a <code>Connection</code>, which can be fed directly to the <code>DaZeus::from_conn</code>
+constructor.</p>
+
+<p>For many connections it is recommended to use a buffered Read+Write. This allows the stream
+to flush a whole Json object (no matter the size) at once using an internal buffer, instead of
+depending on the underlying system. To use a buffered connection with a <code>Connection</code> object,
+use the <code>DaZeus::from_conn_buff</code> constructor.</p>
+
+<p>Creating a new connection can now be done using the following basic snippet:</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>match</span> <span class='ident'>connection_from_str</span>(<span class='ident'>socket</span>) {
+    <span class='prelude-val'>Ok</span>(<span class='ident'>connection</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>dazeus</span> <span class='op'>=</span> <span class='ident'>DaZeus</span>::<span class='ident'>from_conn_buff</span>(<span class='ident'>connection</span>);
+    },
+    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Got an error while trying to connect to DaZeus: {}&quot;</span>, <span class='ident'>e</span>);
+    }
+}
+</pre>
+
+<p>After having created an instance of DaZeus you can start sending commands using one of the
+methods provided in the <code>Commander</code> trait. Alternatively you can send Request objects directly
+using the <code>DaZeus::send()</code> method, however this is generally not recommended.</p>
+
+<p>You can register new listeners using the <code>Commander::subscribe()</code> and
+<code>Commander::SubscribeCommand()</code> methods. You provide these with functions which will be called
+every time such an event occurs.</p>
+
+<p>After you have enabled any event subscribers you need to use the <code>DaZeus::listen()</code> method,
+or check for new events manually using either the blocking <code>DaZeus::next_event()</code> or the
+non-blocking <code>DaZeus::try_next_event()</code>.</p>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1>
+<p>The example below creates a simple echo server which responds to some PrivMsg with the exact
+same reply, only prepending the user that sent the message, so that a highlight is created in
+IRC clients configured as such.</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='ident'>socket</span> <span class='op'>=</span> <span class='string'>&quot;unix:/tmp/dazeus.sock&quot;</span>;
+<span class='kw'>match</span> <span class='ident'>connection_from_str</span>(<span class='ident'>socket</span>) {
+    <span class='prelude-val'>Ok</span>(<span class='ident'>connection</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>dazeus</span> <span class='op'>=</span> <span class='ident'>DaZeus</span>::<span class='ident'>from_conn_buff</span>(<span class='ident'>connection</span>);
+        <span class='ident'>dazeus</span>.<span class='ident'>subscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>PrivMsg</span>, <span class='op'>|</span><span class='ident'>evt</span><span class='op'>|</span> {
+            <span class='ident'>dazeus</span>.<span class='ident'>reply</span>(<span class='kw-2'>&amp;</span><span class='ident'>evt</span>, <span class='kw-2'>&amp;</span><span class='ident'>evt</span>[<span class='number'>3</span>], <span class='boolval'>true</span>);
+        });
+        <span class='ident'>dazeus</span>.<span class='ident'>listen</span>();
+    },
+    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Could not connect to DaZeus: {}&quot;</span>, <span class='ident'>e</span>);
+}
+</pre>
+
+<p>The example below creates a connection to the DaZeus server and then immediately joins a
+channel, and waits for a response until the join was confirmed by the DaZeus core. Note how
+this is just a short-run command, in contrast to the previous example that will keep running
+for as long as it can.</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='ident'>socket</span> <span class='op'>=</span> <span class='string'>&quot;unix:/tmp/dazeus.sock&quot;</span>;
+<span class='kw'>match</span> <span class='ident'>connection_from_str</span>(<span class='ident'>socket</span>) {
+    <span class='prelude-val'>Ok</span>(<span class='ident'>connection</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>dazeus</span> <span class='op'>=</span> <span class='ident'>DaZeus</span>::<span class='ident'>from_conn_buff</span>(<span class='ident'>connection</span>);
+        <span class='ident'>dazeus</span>.<span class='ident'>join</span>(<span class='string'>&quot;local&quot;</span>, <span class='string'>&quot;#test&quot;</span>).<span class='ident'>into_inner</span>();
+    },
+    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Could not connect to DaZeus: {}&quot;</span>, <span class='ident'>e</span>);
+}
+</pre>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.DaZeus.html'
+                               title='dazeus::DaZeus'>DaZeus</a></td>
+                        <td class='docblock short'><p>The base DaZeus struct.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Event.html'
+                               title='dazeus::Event'>Event</a></td>
+                        <td class='docblock short'><p>An event received from the DaZeus server.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.InvalidJsonError.html'
+                               title='dazeus::InvalidJsonError'>InvalidJsonError</a></td>
+                        <td class='docblock short'><p>Error returned when the passed Json did not have the required structure.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ParseConfigGroupError.html'
+                               title='dazeus::ParseConfigGroupError'>ParseConfigGroupError</a></td>
+                        <td class='docblock short'><p>Error returned when a string could not be parsed as a <code>ConfigGroup</code>.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ParseEventTypeError.html'
+                               title='dazeus::ParseEventTypeError'>ParseEventTypeError</a></td>
+                        <td class='docblock short'><p>Error returned when a string could not be parsed as an <code>EventType</code>.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Response.html'
+                               title='dazeus::Response'>Response</a></td>
+                        <td class='docblock short'><p>The response from a command send to the DaZeus server.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Scope.html'
+                               title='dazeus::Scope'>Scope</a></td>
+                        <td class='docblock short'><p>A scope for retrieving permissions and properties.</p>
+</td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.ConfigGroup.html'
+                               title='dazeus::ConfigGroup'>ConfigGroup</a></td>
+                        <td class='docblock short'><p>The type of config that should be retrieved.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Connection.html'
+                               title='dazeus::Connection'>Connection</a></td>
+                        <td class='docblock short'><p>A connection enum that encapsulates TCP and Unix sockets.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.EventType.html'
+                               title='dazeus::EventType'>EventType</a></td>
+                        <td class='docblock short'><p>The events that could possibly be received from the DaZeus server.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Request.html'
+                               title='dazeus::Request'>Request</a></td>
+                        <td class='docblock short'><p>An enum of all requests that can be sent to your DaZeus instance.</p>
+</td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='constant' href='constant.PROTOCOL_VERSION.html'
+                               title='dazeus::PROTOCOL_VERSION'>PROTOCOL_VERSION</a></td>
+                        <td class='docblock short'><p>The version of the DaZeus plugin communication protocol that these bindings understand.</p>
+</td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Commander.html'
+                               title='dazeus::Commander'>Commander</a></td>
+                        <td class='docblock short'><p>Methods that need to be implemented for sending commands to the server</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.connection_from_str.html'
+                               title='dazeus::connection_from_str'>connection_from_str</a></td>
+                        <td class='docblock short'><p>Takes a string in the format type:connection_str and tries to connect
+to that location. Returns the connection inside an enum that can be used
+inside DaZeus directly.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.is_event_json.html'
+                               title='dazeus::is_event_json'>is_event_json</a></td>
+                        <td class='docblock short'><p>Returns whether or not the given Json data could be a valid event object.</p>
+</td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.Command.html'
+                               title='dazeus::Command'>Command</a></td>
+                        <td class='docblock short'><p>A <code>String</code> indicating the name of some command.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.ListenerHandle.html'
+                               title='dazeus::ListenerHandle'>ListenerHandle</a></td>
+                        <td class='docblock short'><p>An identifier for unsubscribing an event listener.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.Message.html'
+                               title='dazeus::Message'>Message</a></td>
+                        <td class='docblock short'><p>A <code>String</code> containing the message to be sent.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.Network.html'
+                               title='dazeus::Network'>Network</a></td>
+                        <td class='docblock short'><p>A <code>String</code> for the target IRC network.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.PluginName.html'
+                               title='dazeus::PluginName'>PluginName</a></td>
+                        <td class='docblock short'><p>A <code>String</code> indicating the name of the plugin. This is used for retrieving configuration.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.PluginVersion.html'
+                               title='dazeus::PluginVersion'>PluginVersion</a></td>
+                        <td class='docblock short'><p>A <code>String</code> indicating the version of the protocol used by the bindings.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.Target.html'
+                               title='dazeus::Target'>Target</a></td>
+                        <td class='docblock short'><p>A <code>String</code> containing the target (receiver) of some command or message.</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "dazeus";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

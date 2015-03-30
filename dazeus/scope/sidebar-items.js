@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Scope","A scope for retrieving permissions and properties."]]});

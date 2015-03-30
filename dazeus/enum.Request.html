@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Request` enum in crate `dazeus`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Request">
+
+    <title>dazeus::Request - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>dazeus</a></p><script>window.sidebarCurrent = {name: 'Request', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>dazeus</a>::<wbr><a class='enum' href=''>Request</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-6648' href='../src/dazeus/request.rs.html#67-276'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum Request {
+    Subscribe(<a class='enum' href='../dazeus/enum.EventType.html' title='dazeus::EventType'>EventType</a>),
+    Unsubscribe(<a class='enum' href='../dazeus/enum.EventType.html' title='dazeus::EventType'>EventType</a>),
+    SubscribeCommand(<a class='type' href='../dazeus/type.Command.html' title='dazeus::Command'>Command</a>, <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>&gt;),
+    Networks,
+    Channels(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>),
+    Message(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>, <a class='type' href='../dazeus/type.Message.html' title='dazeus::Message'>Message</a>),
+    Notice(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>, <a class='type' href='../dazeus/type.Message.html' title='dazeus::Message'>Message</a>),
+    Ctcp(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>, <a class='type' href='../dazeus/type.Message.html' title='dazeus::Message'>Message</a>),
+    CtcpReply(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>, <a class='type' href='../dazeus/type.Message.html' title='dazeus::Message'>Message</a>),
+    Action(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>, <a class='type' href='../dazeus/type.Message.html' title='dazeus::Message'>Message</a>),
+    Names(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>),
+    Whois(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>),
+    Join(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>),
+    Part(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>, <a class='type' href='../dazeus/type.Target.html' title='dazeus::Target'>Target</a>),
+    Nick(<a class='type' href='../dazeus/type.Network.html' title='dazeus::Network'>Network</a>),
+    Handshake(<a class='type' href='../dazeus/type.PluginName.html' title='dazeus::PluginName'>PluginName</a>, <a class='type' href='../dazeus/type.PluginVersion.html' title='dazeus::PluginVersion'>PluginVersion</a>, <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;),
+    Config(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='enum' href='../dazeus/enum.ConfigGroup.html' title='dazeus::ConfigGroup'>ConfigGroup</a>),
+    GetProperty(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    SetProperty(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    UnsetProperty(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    PropertyKeys(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    SetPermission(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    HasPermission(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+    UnsetPermission(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../dazeus/struct.Scope.html' title='dazeus::Scope'>Scope</a>),
+}</pre><div class='docblock'><p>An enum of all requests that can be sent to your DaZeus instance.</p>
+
+<p>Note that typically you won&#39;t create these request instances directly. Instead you can use the
+different <code>Commander</code> trait methods. However if you wish, you can directly use <code>DaZeus::send()</code>
+to send these requests yourself.</p>
+</div><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.Subscribe'><a class='stability Unmarked' title='No stability level'></a><code>Subscribe</code></td><td><div class='docblock'><p>Subscribe to a certain event type.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Subscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>PrivMsg</span>)
+</pre>
+</div></td></tr><tr><td id='variant.Unsubscribe'><a class='stability Unmarked' title='No stability level'></a><code>Unsubscribe</code></td><td><div class='docblock'><p>Unsubscribe from an event.</p>
+
+<p>Note that you cannot specify <code>EventType::Command()</code> for this request, as registered
+commands cannot be unregistered from the DaZeus server. To stop listening, just let DaZeus
+remove the listener.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Unsubscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>Join</span>)
+</pre>
+</div></td></tr><tr><td id='variant.SubscribeCommand'><a class='stability Unmarked' title='No stability level'></a><code>SubscribeCommand</code></td><td><div class='docblock'><p>Subscribe to a command (optionally on a specific network).</p>
+
+<p>You can use <code>Request::Subscribe(EventType::Command(String::from_str(&quot;example&quot;))</code> as an
+alternative to <code>Request::SubscribeCommand(String::from_str(&quot;example&quot;))</code>. Note that the
+former does not allow you to optionally specify a network on which the command is actively
+listened to.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>SubscribeCommand</span>(<span class='string'>&quot;greet&quot;</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>Some</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>()))
+</pre>
+</div></td></tr><tr><td id='variant.Networks'><a class='stability Unmarked' title='No stability level'></a><code>Networks</code></td><td><div class='docblock'><p>Retrieve a list of networks that the DaZeus core is currently connected to.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Networks</span>
+</pre>
+</div></td></tr><tr><td id='variant.Channels'><a class='stability Unmarked' title='No stability level'></a><code>Channels</code></td><td><div class='docblock'><p>Retrieve a list of channels on the specified network that the bot has joined.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Channels</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Message'><a class='stability Unmarked' title='No stability level'></a><code>Message</code></td><td><div class='docblock'><p>Request to send a message to a specific target on some network.</p>
+
+<p>This will request DaZeus to send a PRIVMSG.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Message</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;#botters-test&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;Hello!&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Notice'><a class='stability Unmarked' title='No stability level'></a><code>Notice</code></td><td><div class='docblock'><p>Request to send a notice to some target on some network.</p>
+
+<p>This will request DaZeus to send a NOTICE.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Notice</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;MrExample&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;Message!&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Ctcp'><a class='stability Unmarked' title='No stability level'></a><code>Ctcp</code></td><td><div class='docblock'><p>Request to send a CTCP message to some client on some network.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Ctcp</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;MrExample&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;VERSION&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.CtcpReply'><a class='stability Unmarked' title='No stability level'></a><code>CtcpReply</code></td><td><div class='docblock'><p>Request to send a CTCP message reply to some client on some network.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>CtcpReply</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;MrExample&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;VERSION DaZeus 2.0&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Action'><a class='stability Unmarked' title='No stability level'></a><code>Action</code></td><td><div class='docblock'><p>Request to send a CTCP ACTION message to some target on some network.</p>
+
+<p>A CTCP ACTION is most known by users as the <code>/me</code> command.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Action</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;#example&quot;</span>, <span class='string'>&quot;is creating an example&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Names'><a class='stability Unmarked' title='No stability level'></a><code>Names</code></td><td><div class='docblock'><p>Request to send the list of names in some channel.</p>
+
+<p>Note that such a request will generate an <code>EventType::Names</code> event if the server allows it,
+instead of responding to this request directly.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Names</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;#freenode&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Whois'><a class='stability Unmarked' title='No stability level'></a><code>Whois</code></td><td><div class='docblock'><p>Request to send a whois on some target.</p>
+
+<p>Note that such a request will generate an <code>EventType::Whois</code> event if the server allows it,
+instead of responding to this request directly.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Whois</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;MrExample&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Join'><a class='stability Unmarked' title='No stability level'></a><code>Join</code></td><td><div class='docblock'><p>Request to join a channel on some network.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Join</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;#freenode&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Part'><a class='stability Unmarked' title='No stability level'></a><code>Part</code></td><td><div class='docblock'><p>Request to leave a channel on some network.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Part</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;#freenode&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Nick'><a class='stability Unmarked' title='No stability level'></a><code>Nick</code></td><td><div class='docblock'><p>Request the nickname of the bot on a network.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Nick</span>(<span class='string'>&quot;freenode&quot;</span>.<span class='ident'>to_string</span>())
+</pre>
+</div></td></tr><tr><td id='variant.Handshake'><a class='stability Unmarked' title='No stability level'></a><code>Handshake</code></td><td><div class='docblock'><p>Request for a handshake to the DaZeus Core.</p>
+
+<p>The handshake allows the plugin to retrieve configuration options.</p>
+
+<p>The second parameter of this request variant is the plugin version. Note that this
+parameter should be equal to the version that these bindings understand.</p>
+
+<p>The optional third parameter may provide an alternative name to be used to retrieve
+options from the DaZeus core config. By default the name of the plugin will be used.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Handshake</span>(<span class='string'>&quot;my_plugin&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>PROTOCOL_VERSION</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>None</span>)
+</pre>
+</div></td></tr><tr><td id='variant.Config'><a class='stability Unmarked' title='No stability level'></a><code>Config</code></td><td><div class='docblock'><p>Retrieve some option from the DaZeus core config.</p>
+
+<p>The second parameter is the section from which the configuration parameter should be
+retrieved. This may either be <code>ConfigGroup::Core</code> or <code>ConfigGroup::Plugin</code></p>
+
+<p>Note that in order to successfully retrieve these configuration values the plugin first
+needs to have completed a succesful handshake with the core.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>Config</span>(<span class='string'>&quot;highlight&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>ConfigGroup</span>::<span class='ident'>Core</span>)
+</pre>
+</div></td></tr><tr><td id='variant.GetProperty'><a class='stability Unmarked' title='No stability level'></a><code>GetProperty</code></td><td><div class='docblock'><p>Retrieve a property from the internal DaZeus core database.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>GetProperty</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Scope</span>::<span class='ident'>any</span>())
+</pre>
+</div></td></tr><tr><td id='variant.SetProperty'><a class='stability Unmarked' title='No stability level'></a><code>SetProperty</code></td><td><div class='docblock'><p>Set a property in the internal DaZeus core database.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>SetProperty</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;value&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Scope</span>::<span class='ident'>any</span>())
+</pre>
+</div></td></tr><tr><td id='variant.UnsetProperty'><a class='stability Unmarked' title='No stability level'></a><code>UnsetProperty</code></td><td><div class='docblock'><p>Remove a property from the internal DaZeus core database.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>UnsetProperty</span>(<span class='string'>&quot;example&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Scope</span>::<span class='ident'>any</span>())
+</pre>
+</div></td></tr><tr><td id='variant.PropertyKeys'><a class='stability Unmarked' title='No stability level'></a><code>PropertyKeys</code></td><td><div class='docblock'><p>Retrieve a set of keys that is available for some prefix and scope.</p>
+
+<p>The first parameter of the variant is the prefix string for retrieving property keys.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>PropertyKeys</span>(<span class='string'>&quot;path.to&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Scope</span>::<span class='ident'>network</span>(<span class='string'>&quot;example&quot;</span>))
+</pre>
+</div></td></tr><tr><td id='variant.SetPermission'><a class='stability Unmarked' title='No stability level'></a><code>SetPermission</code></td><td><div class='docblock'><p>Set a permission in the permission database of the DaZeus core.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>SetPermission</span>(<span class='string'>&quot;edit&quot;</span>.<span class='ident'>to_string</span>(), <span class='boolval'>true</span>, <span class='ident'>Scope</span>::<span class='ident'>sender</span>(<span class='string'>&quot;example&quot;</span>, <span class='string'>&quot;MrExample&quot;</span>))
+</pre>
+</div></td></tr><tr><td id='variant.HasPermission'><a class='stability Unmarked' title='No stability level'></a><code>HasPermission</code></td><td><div class='docblock'><p>Request a permission to be retrieved from the permission database of the DaZeus core.</p>
+
+<p>The second parameter of this variant indicates the default value that the core should
+return if the permission was not found inside the permission database.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>HasPermission</span>(<span class='string'>&quot;edit&quot;</span>.<span class='ident'>to_string</span>(), <span class='boolval'>false</span>, <span class='ident'>Scope</span>::<span class='ident'>sender</span>(<span class='string'>&quot;example&quot;</span>, <span class='string'>&quot;MrExample&quot;</span>))
+</pre>
+</div></td></tr><tr><td id='variant.UnsetPermission'><a class='stability Unmarked' title='No stability level'></a><code>UnsetPermission</code></td><td><div class='docblock'><p>Remove a permission from the permission database of the DaZeus core.</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>Request</span>::<span class='ident'>UnsetPermission</span>(<span class='string'>&quot;edit&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Scope</span>::<span class='ident'>sender</span>(<span class='string'>&quot;example&quot;</span>, <span class='string'>&quot;MrExample&quot;</span>))
+</pre>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rustc_serialize/json/trait.ToJson.html' title='rustc_serialize::json::ToJson'>ToJson</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='docblock'><p>Implements transforming the request to a Json object that is ready to be sent a DaZeus core.</p>
+</div><div class='impl-items'><h4 id='method.to_json' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_json' class='fnname'>to_json</a>(&amp;self) -&gt; <a class='enum' href='../rustc_serialize/json/enum.Json.html' title='rustc_serialize::json::Json'>Json</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rustc_serialize/json/trait.ToJson.html' title='rustc_serialize::json::ToJson'>ToJson</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='docblock'><p>Implements transforming the request to a Json object that is ready to be sent a DaZeus core.</p>
+</div><div class='impl-items'><h4 id='method.to_json' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_json' class='fnname'>to_json</a>(&amp;self) -&gt; <a class='enum' href='../rustc_serialize/json/enum.Json.html' title='rustc_serialize::json::Json'>Json</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h4>
+<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h4>
+<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../dazeus/enum.Request.html' title='dazeus::Request'>Request</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "dazeus";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
