@@ -20,7 +20,7 @@ use super::scope::Scope;
 pub struct DaZeus<'a> {
     event_rx: Receiver<Event>,
     request_tx: Sender<(Request, Sender<Response>)>,
-    listeners: RefCell<Vec<Listener<'a>>>,
+    listeners: Vec<Listener<'a>>,
     current_handle: Cell<ListenerHandle>,
 }
 
