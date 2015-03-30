@@ -20,7 +20,7 @@ use super::scope::Scope;
 pub struct DaZeus<'a> {
     event_rx: Receiver<Event>,
     request_tx: Sender<(Request, Sender<Response>)>,
-    listeners: Vec<Listener<'a>>,
+    listeners: RefCell<Vec<Listener<'a>>>,
     current_handle: Cell<ListenerHandle>,
 }
 
@@ -117,7 +117,7 @@ impl<'a> DaZeus<'a> {
     }
 
     /// Loop wait for messages to receive in a blocking way.
-    fn listen(&self) {
+    pub fn listen(&self) {
         loop {
             let _ = self.next_event();
         }
