@@ -1,6 +1,6 @@
 [package]
 name = "dazeus"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ruben Nijveld <ruben@gewooniets.nl>"]
 description = "Dazeus IRC bot bindings for rust"
 documentation = "http://dazeus.github.io/dazeus-rs/dazeus/index.html"
@@ -18,7 +18,7 @@ path = "src/lib.rs"
 version = "0.3"
 
 [dependencies.unix_socket]
-git = "https://github.com/sfackler/rust-unix-socket.git"
+version = "0.2"
 
 [dependencies.log]
 version = "0.3"
