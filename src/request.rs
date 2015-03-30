@@ -1,41 +1,284 @@
 use super::scope::Scope;
 use serialize::json::{Json, ToJson, Object, Array};
+use super::event::EventType;
+use std::string::ToString;
+use std::str::FromStr;
+use super::error::ParseConfigGroupError;
 
+/// The version of the DaZeus plugin communication protocol that these bindings understand.
+pub const PROTOCOL_VERSION: &'static str = "1";
 
-const PROTOCOL_VERSION: &'static str = "1";
+/// A `String` for the target IRC network.
+pub type Network = String;
 
+/// A `String` containing the message to be sent.
+pub type Message = String;
 
+/// A `String` containing the target (receiver) of some command or message.
+///
+/// Typically this is a client or some channel on an IRC network.
+pub type Target = String;
+
+/// A `String` indicating the name of some command.
+pub type Command = String;
+
+/// A `String` indicating the name of the plugin. This is used for retrieving configuration.
+pub type PluginName = String;
+
+/// A `String` indicating the version of the protocol used by the bindings.
+pub type PluginVersion = String;
+
+/// The type of config that should be retrieved.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ConfigGroup {
+    /// Indicates a config value that should be retrieved from the plugin settings.
+    Plugin,
+    /// Indicates a config value that should be retrieved from the core settings.
+    Core,
+}
+
+impl ToString for ConfigGroup {
+    fn to_string(&self) -> String {
+        match *self {
+            ConfigGroup::Plugin => String::from_str("plugin"),
+            ConfigGroup::Core => String::from_str("core"),
+        }
+    }
+}
+
+impl FromStr for ConfigGroup {
+    type Err = ParseConfigGroupError;
+
+    fn from_str(s: &str) -> Result<Self, ParseConfigGroupError> {
+        match &s.to_lowercase()[..] {
+            "plugin" => Ok(ConfigGroup::Plugin),
+            "core" => Ok(ConfigGroup::Core),
+            _ => Err(ParseConfigGroupError::new())
+        }
+    }
+}
+
+/// An enum of all requests that can be sent to your DaZeus instance.
+///
+/// Note that typically you won't create these request instances directly. Instead you can use the
+/// different `Commander` trait methods. However if you wish, you can directly use `DaZeus::send()`
+/// to send these requests yourself.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Request {
-    Subscribe(String),
-    Unsubscribe(String),
-    SubscribeCommand(String, Option<String>),
+    /// Subscribe to a certain event type.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Subscribe(EventType::PrivMsg)
+    /// ```
+    Subscribe(EventType),
+    /// Unsubscribe from an event.
+    ///
+    /// Note that you cannot specify `EventType::Command()` for this request, as registered
+    /// commands cannot be unregistered from the DaZeus server. To stop listening, just let DaZeus
+    /// remove the listener.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Unsubscribe(EventType::Join)
+    /// ```
+    Unsubscribe(EventType),
+    /// Subscribe to a command (optionally on a specific network).
+    ///
+    /// You can use `Request::Subscribe(EventType::Command(String::from_str("example"))` as an
+    /// alternative to `Request::SubscribeCommand(String::from_str("example"))`. Note that the
+    /// former does not allow you to optionally specify a network on which the command is actively
+    /// listened to.
+    ///
+    /// # Example
+    /// ```
+    /// Request::SubscribeCommand("greet".to_string(), Some("freenode".to_string()))
+    /// ```
+    SubscribeCommand(Command, Option<Network>),
+    /// Retrieve a list of networks that the DaZeus core is currently connected to.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Networks
+    /// ```
     Networks,
-    Channels(String),
-    Message(String, String, String),
-    Notice(String, String, String),
-    Ctcp(String, String, String),
-    CtcpReply(String, String, String),
-    Action(String, String, String),
-    Names(String, String),
-    Whois(String, String),
-    Join(String, String),
-    Part(String, String),
-    Nick(String),
-    Handshake(String, String, Option<String>),
-    Config(String, Option<String>),
+    /// Retrieve a list of channels on the specified network that the bot has joined.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Channels("freenode".to_string())
+    /// ```
+    Channels(Network),
+    /// Request to send a message to a specific target on some network.
+    ///
+    /// This will request DaZeus to send a PRIVMSG.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Message("freenode".to_string(), "#botters-test".to_string(), "Hello!".to_string())
+    /// ```
+    Message(Network, Target, Message),
+    /// Request to send a notice to some target on some network.
+    ///
+    /// This will request DaZeus to send a NOTICE.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Notice("example".to_string(), "MrExample".to_string(), "Message!".to_string())
+    /// ```
+    Notice(Network, Target, Message),
+    /// Request to send a CTCP message to some client on some network.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Ctcp("example".to_string(), "MrExample".to_string(), "VERSION".to_string())
+    /// ```
+    Ctcp(Network, Target, Message),
+    /// Request to send a CTCP message reply to some client on some network.
+    ///
+    /// # Example
+    /// ```
+    /// Request::CtcpReply("example".to_string(), "MrExample".to_string(), "VERSION DaZeus 2.0".to_string())
+    /// ```
+    CtcpReply(Network, Target, Message),
+    /// Request to send a CTCP ACTION message to some target on some network.
+    ///
+    /// A CTCP ACTION is most known by users as the `/me` command.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Action("example".to_string(), "#example", "is creating an example".to_string())
+    /// ```
+    Action(Network, Target, Message),
+    /// Request to send the list of names in some channel.
+    ///
+    /// Note that such a request will generate an `EventType::Names` event if the server allows it,
+    /// instead of responding to this request directly.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Names("freenode".to_string(), "#freenode".to_string())
+    /// ```
+    Names(Network, Target),
+    /// Request to send a whois on some target.
+    ///
+    /// Note that such a request will generate an `EventType::Whois` event if the server allows it,
+    /// instead of responding to this request directly.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Whois("example".to_string(), "MrExample".to_string())
+    /// ```
+    Whois(Network, Target),
+    /// Request to join a channel on some network.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Join("freenode".to_string(), "#freenode".to_string())
+    /// ```
+    Join(Network, Target),
+    /// Request to leave a channel on some network.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Part("freenode".to_string(), "#freenode".to_string())
+    /// ```
+    Part(Network, Target),
+    /// Request the nickname of the bot on a network.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Nick("freenode".to_string())
+    /// ```
+    Nick(Network),
+    /// Request for a handshake to the DaZeus Core.
+    ///
+    /// The handshake allows the plugin to retrieve configuration options.
+    ///
+    /// The second parameter of this request variant is the plugin version. Note that this
+    /// parameter should be equal to the version that these bindings understand.
+    ///
+    /// The optional third parameter may provide an alternative name to be used to retrieve
+    /// options from the DaZeus core config. By default the name of the plugin will be used.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Handshake("my_plugin".to_string(), PROTOCOL_VERSION.to_string(), None)
+    /// ```
+    Handshake(PluginName, PluginVersion, Option<String>),
+    /// Retrieve some option from the DaZeus core config.
+    ///
+    /// The second parameter is the section from which the configuration parameter should be
+    /// retrieved. This may either be `ConfigGroup::Core` or `ConfigGroup::Plugin`
+    ///
+    /// Note that in order to successfully retrieve these configuration values the plugin first
+    /// needs to have completed a succesful handshake with the core.
+    ///
+    /// # Example
+    /// ```
+    /// Request::Config("highlight".to_string(), ConfigGroup::Core)
+    /// ```
+    Config(String, ConfigGroup),
+    /// Retrieve a property from the internal DaZeus core database.
+    ///
+    /// # Example
+    /// ```
+    /// Request::GetProperty("example".to_string(), Scope::any())
+    /// ```
     GetProperty(String, Scope),
+    /// Set a property in the internal DaZeus core database.
+    ///
+    /// # Example
+    /// ```
+    /// Request::SetProperty("example".to_string(), "value".to_string(), Scope::any())
+    /// ```
     SetProperty(String, String, Scope),
+    /// Remove a property from the internal DaZeus core database.
+    ///
+    /// # Example
+    /// ```
+    /// Request::UnsetProperty("example".to_string(), Scope::any())
+    /// ```
     UnsetProperty(String, Scope),
+    /// Retrieve a set of keys that is available for some prefix and scope.
+    ///
+    /// The first parameter of the variant is the prefix string for retrieving property keys.
+    ///
+    /// # Example
+    /// ```
+    /// Request::PropertyKeys("path.to".to_string(), Scope::network("example"))
+    /// ```
     PropertyKeys(String, Scope),
+    /// Set a permission in the permission database of the DaZeus core.
+    ///
+    /// # Example
+    /// ```
+    /// Request::SetPermission("edit".to_string(), true, Scope::sender("example", "MrExample"))
+    /// ```
     SetPermission(String, bool, Scope),
+    /// Request a permission to be retrieved from the permission database of the DaZeus core.
+    ///
+    /// The second parameter of this variant indicates the default value that the core should
+    /// return if the permission was not found inside the permission database.
+    ///
+    /// # Example
+    /// ```
+    /// Request::HasPermission("edit".to_string(), false, Scope::sender("example", "MrExample"))
+    /// ```
     HasPermission(String, bool, Scope),
+    /// Remove a permission from the permission database of the DaZeus core.
+    ///
+    /// # Example
+    /// ```
+    /// Request::UnsetPermission("edit".to_string(), Scope::sender("example", "MrExample"))
+    /// ```
     UnsetPermission(String, Scope),
 }
 
 impl Request {
     fn get_json_name(&self) -> Json {
         let s = match *self {
+            Request::Subscribe(EventType::Command(_)) => "command",
             Request::Subscribe(_) => "subscribe",
             Request::Unsubscribe(_) => "unsubscribe",
             Request::SubscribeCommand(_, _) => "command",
@@ -75,6 +318,7 @@ impl Request {
     }
 }
 
+/// Implements transforming the request to a Json object that is ready to be sent a DaZeus core.
 impl ToJson for Request {
     fn to_json(&self) -> Json {
         let mut obj = Object::new();
@@ -85,11 +329,18 @@ impl ToJson for Request {
         macro_rules! push_str { ($x: expr) => ( params.push(Json::String($x.clone())) ) }
 
         match *self {
+            Request::Subscribe(EventType::Command(ref cmd)) => {
+                push_str!(cmd);
+            },
+            Request::Unsubscribe(EventType::Command(_)) => {
+                // we can't actually unsubscribe a command
+                panic!("Cannot unsubscribe from command");
+            },
             Request::Subscribe(ref evt) => {
-                push_str!(evt);
+                push_str!(evt.to_string());
             },
             Request::Unsubscribe(ref evt) => {
-                push_str!(evt);
+                push_str!(evt.to_string());
             },
             Request::SubscribeCommand(ref cmd, Some(ref network)) => {
                 push_str!(cmd);
@@ -134,14 +385,10 @@ impl ToJson for Request {
                 push_str!(String::from_str(PROTOCOL_VERSION));
                 push_str!(name);
             },
-            Request::Config(ref key, Some(ref group)) => {
+            Request::Config(ref key, ref ctype) => {
                 push_str!(key);
-                push_str!(group);
+                push_str!(ctype.to_string());
             },
-            Request::Config(ref key, None) => {
-                push_str!(key);
-                push_str!(String::from_str("plugin"));
-            }
             Request::GetProperty(ref property, ref scope) => {
                 push_str!(String::from_str("get"));
                 push_str!(property);

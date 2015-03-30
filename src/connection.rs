@@ -2,12 +2,20 @@ use std::io::{Read, Write, Result, Error, ErrorKind};
 use unix_socket::UnixStream;
 use std::net::TcpStream;
 
+/// A connection enum that encapsulates TCP and Unix sockets.
+///
+/// This enum is mainly used by the `connection_from_str` method. If you want to provide your
+/// own connection not retrieved from that function, DaZeus will work with any structure that
+/// implements the `std::io::Read` and `std::io::Write` traits.
 pub enum Connection {
+    /// A Unix domain socket, as implemented by the `unix_socket` crate.
     Unix(UnixStream),
+    /// A TCP stream, as implemented by `std::net::TcpStream`.
     Tcp(TcpStream)
 }
 
 impl Connection {
+    /// Try to duplicate the stream into two objects that reference the same underlying resource.
     pub fn try_clone(&self) -> Result<Connection> {
         match *self {
             Connection::Unix(ref stream) => match stream.try_clone() {

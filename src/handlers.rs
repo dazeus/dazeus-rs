@@ -2,7 +2,9 @@ use std::io::{Read, Write};
 use std::sync::mpsc::{Sender, Receiver};
 use serialize::json::{ToJson, Json};
 use std::str::from_utf8;
-use super::{Response, Event, Request};
+use super::response::Response;
+use super::event::{Event, is_event_json};
+use super::request::Request;
 use std::collections::VecDeque;
 
 pub struct Reader<T: Read> {
@@ -160,7 +162,7 @@ impl Handler {
     }
 
     fn handle_socket_msg(&mut self, data: Json) -> bool {
-        if Event::is_event(&data) {
+        if is_event_json(&data) {
             self.handle_event(data)
         } else {
             self.handle_response(data)

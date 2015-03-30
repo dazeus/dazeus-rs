@@ -1,10 +1,29 @@
 use serialize::json::{ToJson, Json, Array};
 
-/// A scope for retrieving permissions and properties
+/// A scope for retrieving permissions and properties.
+///
+/// A scope is an optional limitation on which some property or permission applies. A scope
+/// consists of three different elements:
+///
+/// * The `network` indicates for which network some property or permission should be stored.
+/// * The `sender` indicates the IRC user for which some property or permission should be stored.
+/// * The `receiver` indicates the channel for which some property or permission should be stored.
+///
+/// Note that for a sender or receiver scope, you also should provide a network, as it makes no
+/// sense to for example provide a permission to the same channel on different networks (they are
+/// only the same in name, but might be completely different in context).
+///
+/// The most generic scope (and easiest one to start with) is one applied to everything. Such a
+/// scope can be created by the `Scope::any()` method.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Scope {
+    /// The network on which the scope is limited (if any).
     pub network: Option<String>,
+
+    /// The sender on which the scope is limited (if any).
     pub sender: Option<String>,
+
+    /// The receiver on which the scope is limited (if any).
     pub receiver: Option<String>,
 }
 
@@ -39,6 +58,7 @@ impl Scope {
         Scope::new(Some(String::from_str(network)), Some(String::from_str(sender)), Some(String::from_str(receiver)))
     }
 
+    /// Checks whether the scope is set to be applied to everything.
     pub fn is_any(&self) -> bool {
         self.network == None && self.sender == None && self.receiver == None
     }

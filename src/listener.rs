@@ -1,6 +1,7 @@
 use super::event::{Event, EventType};
 use std::fmt::{Debug, Error, Formatter};
 
+/// An identifier for unsubscribing an event listener.
 pub type ListenerHandle = u64;
 
 pub struct Listener<'a> {
