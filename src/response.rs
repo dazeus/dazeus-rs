@@ -35,8 +35,8 @@ impl Response {
     ///
     /// This is used by the bindings to create a new Response based on a json blob returned by the
     /// DaZeus core instance.
-    pub fn from_json(data: Json) -> Result<Response, InvalidJsonError> {
-        Ok(Response { data: data })
+    pub fn from_json(data: &Json) -> Result<Response, InvalidJsonError> {
+        Ok(Response { data: data.clone() })
     }
 
     /// Retrieve a property from the data object or return a default if it doesn't exist.

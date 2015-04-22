@@ -1,4 +1,6 @@
-use std::fmt::{Display, Formatter, Error};
+use std::io::Error as IoError;
+use serialize::json::ParserError as JsonParserError;
+use std::str::Utf8Error;
 
 /// Error returned when the passed Json did not have the required structure.
 #[derive(Debug, Clone, PartialEq)]
@@ -8,12 +10,6 @@ impl InvalidJsonError {
     /// Create a new error instance.
     pub fn new(message: &str) -> InvalidJsonError {
         InvalidJsonError { message: String::from_str(message) }
-    }
-}
-
-impl Display for InvalidJsonError {
-    fn fmt(&self, formatter: &mut Formatter) -> Result<(), Error> {
-        self.message.fmt(formatter)
     }
 }
 
@@ -39,4 +35,40 @@ impl ParseConfigGroupError {
     pub fn new() -> ParseConfigGroupError {
         ParseConfigGroupError { _priv: () }
     }
+}
+
+#[derive(Debug)]
+pub enum Error {
+    JsonParserError(JsonParserError),
+    IoError(IoError),
+    Utf8Error(Utf8Error),
+    InvalidJsonError(InvalidJsonError),
+}
+
+impl From<IoError> for Error {
+    fn from(err: IoError) -> Error {
+        Error::IoError(err)
+    }
+}
+
+impl From<Utf8Error> for Error {
+    fn from(err: Utf8Error) -> Error {
+        Error::Utf8Error(err)
+    }
+}
+
+impl From<JsonParserError> for Error {
+    fn from(err: JsonParserError) -> Error {
+        Error::JsonParserError(err)
+    }
+}
+
+impl From<InvalidJsonError> for Error {
+    fn from(err: InvalidJsonError) -> Error {
+        Error::InvalidJsonError(err)
+    }
+}
+
+impl Display for Error {
+    
 }

@@ -73,6 +73,6 @@ pub fn connection_from_str(connection_str: &str) -> Result<Connection> {
                 Err(e) => Err(e)
             }
         },
-        _ => Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type", None))
+        _ => Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type"))
     }
 }
