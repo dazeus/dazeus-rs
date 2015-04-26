@@ -72,14 +72,11 @@
 //! }
 //! ```
 
-#![feature(io, std_misc, collections, slice_patterns)]
-
 #[macro_use]
 extern crate log;
 extern crate rustc_serialize as serialize;
 extern crate unix_socket;
 
-pub use self::commander::*;
 pub use self::connection::*;
 pub use self::dazeus::*;
 pub use self::error::*;
@@ -89,7 +86,6 @@ pub use self::request::*;
 pub use self::response::*;
 pub use self::scope::*;
 
-mod commander;
 mod connection;
 mod dazeus;
 mod event;

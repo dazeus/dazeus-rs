@@ -4,6 +4,7 @@ use super::event::EventType;
 use std::string::ToString;
 use std::str::FromStr;
 use super::error::ParseConfigGroupError;
+use std::ascii::AsciiExt;
 
 /// The version of the DaZeus plugin communication protocol that these bindings understand.
 pub const PROTOCOL_VERSION: &'static str = "1";
@@ -40,8 +41,8 @@ pub enum ConfigGroup {
 impl ToString for ConfigGroup {
     fn to_string(&self) -> String {
         match *self {
-            ConfigGroup::Plugin => String::from_str("plugin"),
-            ConfigGroup::Core => String::from_str("core"),
+            ConfigGroup::Plugin => "plugin".to_string(),
+            ConfigGroup::Core => "core".to_string(),
         }
     }
 }
@@ -50,7 +51,7 @@ impl FromStr for ConfigGroup {
     type Err = ParseConfigGroupError;
 
     fn from_str(s: &str) -> Result<Self, ParseConfigGroupError> {
-        match &s.to_lowercase()[..] {
+        match &s.to_ascii_lowercase()[..] {
             "plugin" => Ok(ConfigGroup::Plugin),
             "core" => Ok(ConfigGroup::Core),
             _ => Err(ParseConfigGroupError::new())
@@ -85,8 +86,8 @@ pub enum Request {
     Unsubscribe(EventType),
     /// Subscribe to a command (optionally on a specific network).
     ///
-    /// You can use `Request::Subscribe(EventType::Command(String::from_str("example"))` as an
-    /// alternative to `Request::SubscribeCommand(String::from_str("example"))`. Note that the
+    /// You can use `Request::Subscribe(EventType::Command("example".to_string())` as an
+    /// alternative to `Request::SubscribeCommand("example".to_string())`. Note that the
     /// former does not allow you to optionally specify a network on which the command is actively
     /// listened to.
     ///
@@ -305,7 +306,7 @@ impl Request {
             Request::UnsetPermission(_, _) => "permission",
         };
 
-        Json::String(String::from_str(s))
+        Json::String(s.to_string())
     }
 
     fn get_action_type(&self) -> String {
@@ -314,7 +315,7 @@ impl Request {
             _ => "do",
         };
 
-        String::from_str(s)
+        s.to_string()
     }
 }
 
@@ -376,13 +377,13 @@ impl ToJson for Request {
             Request::Handshake(ref name, ref version, Some(ref config_name)) => {
                 push_str!(name);
                 push_str!(version);
-                push_str!(String::from_str(PROTOCOL_VERSION));
+                push_str!(PROTOCOL_VERSION.to_string());
                 push_str!(config_name);
             },
             Request::Handshake(ref name, ref version, None) => {
                 push_str!(name);
                 push_str!(version);
-                push_str!(String::from_str(PROTOCOL_VERSION));
+                push_str!(PROTOCOL_VERSION.to_string());
                 push_str!(name);
             },
             Request::Config(ref key, ref ctype) => {
@@ -390,61 +391,61 @@ impl ToJson for Request {
                 push_str!(ctype.to_string());
             },
             Request::GetProperty(ref property, ref scope) => {
-                push_str!(String::from_str("get"));
+                push_str!("get".to_string());
                 push_str!(property);
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::SetProperty(ref property, ref value, ref scope) => {
-                push_str!(String::from_str("set"));
+                push_str!("set".to_string());
                 push_str!(property);
                 push_str!(value);
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::UnsetProperty(ref property, ref scope) => {
-                push_str!(String::from_str("unset"));
+                push_str!("unset".to_string());
                 push_str!(property);
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::PropertyKeys(ref prefix, ref scope) => {
-                push_str!(String::from_str("keys"));
+                push_str!("keys".to_string());
                 push_str!(prefix);
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::SetPermission(ref permission, ref default, ref scope) => {
-                push_str!(String::from_str("set"));
+                push_str!("set".to_string());
                 push_str!(permission);
                 params.push(Json::Boolean(*default));
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::HasPermission(ref permission, ref default, ref scope) => {
-                push_str!(String::from_str("get"));
+                push_str!("get".to_string());
                 push_str!(permission);
                 params.push(Json::Boolean(*default));
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
             Request::UnsetPermission(ref permission, ref scope) => {
-                push_str!(String::from_str("unset"));
+                push_str!("unset".to_string());
                 push_str!(permission);
                 if !scope.is_any() {
-                    obj.insert(String::from_str("scope"), scope.to_json());
+                    obj.insert("scope".to_string(), scope.to_json());
                 }
             },
         }
 
         if params.len() > 0 {
-            obj.insert(String::from_str("params"), Json::Array(params));
+            obj.insert("params".to_string(), Json::Array(params));
         }
 
         Json::Object(obj)

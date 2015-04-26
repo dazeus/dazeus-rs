@@ -40,22 +40,22 @@ impl Scope {
 
     /// Scope to a specific network
     pub fn network(network: &str) -> Scope {
-        Scope::new(Some(String::from_str(network)), None, None)
+        Scope::new(Some(network.to_string()), None, None)
     }
 
     /// Scope to a specific sender (typically a channel)
     pub fn sender(network: &str, sender: &str) -> Scope {
-        Scope::new(Some(String::from_str(network)), Some(String::from_str(sender)), None)
+        Scope::new(Some(network.to_string()), Some(sender.to_string()), None)
     }
 
     /// Scope to a specific receiver (typically a user)
     pub fn receiver(network: &str, receiver: &str) -> Scope {
-        Scope::new(Some(String::from_str(network)), None, Some(String::from_str(receiver)))
+        Scope::new(Some(network.to_string()), None, Some(receiver.to_string()))
     }
 
     /// Scope to a specific receiver and channel (typically a user in a channel)
     pub fn to(network: &str, sender: &str, receiver: &str) -> Scope {
-        Scope::new(Some(String::from_str(network)), Some(String::from_str(sender)), Some(String::from_str(receiver)))
+        Scope::new(Some(network.to_string()), Some(sender.to_string()), Some(receiver.to_string()))
     }
 
     /// Checks whether the scope is set to be applied to everything.

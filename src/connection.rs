@@ -28,6 +28,20 @@ impl Connection {
             }
         }
     }
+
+    /// Takes a string in the format type:connection_str and tries to connect
+    /// to that location. Returns the connection inside an enum that can be used
+    /// inside DaZeus directly.
+    pub fn from_str(connection_str: &str) -> Result<Connection> {
+        let splits = connection_str.splitn(2, ':').collect::<Vec<_>>();
+        if splits.len() == 2 && splits[0] == "unix" {
+            Ok(Connection::Unix(try!(UnixStream::connect(splits[1]))))
+        } else if splits.len() == 2 && splits[0] == "tcp" {
+            Ok(Connection::Tcp(try!(TcpStream::connect(splits[1]))))
+        } else {
+            Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type"))
+        }
+    }
 }
 
 impl Read for Connection {
@@ -52,27 +66,5 @@ impl Write for Connection {
             Connection::Unix(ref mut stream) => stream.flush(),
             Connection::Tcp(ref mut stream) => stream.flush(),
         }
-    }
-}
-
-/// Takes a string in the format type:connection_str and tries to connect
-/// to that location. Returns the connection inside an enum that can be used
-/// inside DaZeus directly.
-pub fn connection_from_str(connection_str: &str) -> Result<Connection> {
-    let splits = connection_str.splitn(1, ':').collect::<Vec<_>>();
-    match &splits[..] {
-        ["unix", path] => {
-            match UnixStream::connect(path) {
-                Ok(stream) => Ok(Connection::Unix(stream)),
-                Err(e) => Err(e)
-            }
-        },
-        ["tcp", location] => {
-            match TcpStream::connect(location) {
-                Ok(stream) => Ok(Connection::Tcp(stream)),
-                Err(e) => Err(e)
-            }
-        },
-        _ => Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type"))
     }
 }

@@ -16,7 +16,7 @@ impl Response {
     pub fn for_fail(msg: &str) -> Response {
         let mut obj = Object::new();
         obj.insert("success".to_string(), Json::Boolean(false));
-        obj.insert("reason".to_string(), Json::String(String::from_str(msg)));
+        obj.insert("reason".to_string(), Json::String(msg.to_string()));
 
         Response { data: Json::Object(obj) }
     }

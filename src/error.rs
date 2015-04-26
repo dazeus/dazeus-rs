@@ -1,6 +1,8 @@
 use std::io::Error as IoError;
 use serialize::json::ParserError as JsonParserError;
 use std::str::Utf8Error;
+use std::fmt::{Display, Formatter};
+use std::fmt::Error as FmtError;
 
 /// Error returned when the passed Json did not have the required structure.
 #[derive(Debug, Clone, PartialEq)]
@@ -9,7 +11,7 @@ pub struct InvalidJsonError { message: String }
 impl InvalidJsonError {
     /// Create a new error instance.
     pub fn new(message: &str) -> InvalidJsonError {
-        InvalidJsonError { message: String::from_str(message) }
+        InvalidJsonError { message: message.to_string() }
     }
 }
 
@@ -37,12 +39,23 @@ impl ParseConfigGroupError {
     }
 }
 
+/// Error when an unexpected or invalid response was received from DaZeus
+#[derive(Debug, Clone, PartialEq)]
+pub struct ReceiveError { _priv: () }
+
+impl ReceiveError {
+    pub fn new() -> ReceiveError {
+        ReceiveError { _priv: () }
+    }
+}
+
 #[derive(Debug)]
 pub enum Error {
     JsonParserError(JsonParserError),
     IoError(IoError),
     Utf8Error(Utf8Error),
     InvalidJsonError(InvalidJsonError),
+    ReceiveError(ReceiveError),
 }
 
 impl From<IoError> for Error {
@@ -69,6 +82,14 @@ impl From<InvalidJsonError> for Error {
     }
 }
 
+impl From<ReceiveError> for Error {
+    fn from(err: ReceiveError) -> Error {
+        Error::ReceiveError(err)
+    }
+}
+
 impl Display for Error {
-    
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
+        write!(f, "{:?}", self)
+    }
 }
