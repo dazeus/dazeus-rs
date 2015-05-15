@@ -1,37 +1,42 @@
 use super::event::{Event, EventType};
+use super::dazeus::DaZeus;
 use std::fmt::{Debug, Error, Formatter};
+use std::io::{Read, Write};
+use std::cell::RefCell;
+use std::ops::DerefMut;
 
 /// An identifier for unsubscribing an event listener.
 pub type ListenerHandle = u64;
 
-pub struct Listener<'a> {
+pub struct Listener<'a, T> where T: Read + Write {
     pub event: EventType,
     pub handle: ListenerHandle,
-    callback: Box<FnMut(Event) + 'a>,
+    callback: RefCell<Box<FnMut(Event, &DaZeus<T>) + 'a>>,
 }
 
-impl<'a> PartialEq for Listener<'a> {
+impl<'a, T> PartialEq for Listener<'a, T> where T: Read + Write {
     fn eq(&self, other: &Self) -> bool {
         self.handle == other.handle
     }
 }
 
-impl<'a> Debug for Listener<'a> {
+impl<'a, T> Debug for Listener<'a, T> where T: Read + Write {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "Listener {{ event: {:?}, handle: {:?} callback: FnMut(Event) }}", self.event, self.handle)
     }
 }
 
-impl<'a> Listener<'a> {
-    pub fn new<F>(handle: ListenerHandle, event_type: EventType, listener: F) -> Listener<'a>
-        where F: FnMut(Event) + 'a
+impl<'a, T> Listener<'a, T> where T: Read + Write {
+    pub fn new<F>(handle: ListenerHandle, event_type: EventType, listener: F) -> Listener<'a, T>
+        where F: FnMut(Event, &DaZeus<T>) + 'a
     {
-        Listener { event: event_type, handle: handle, callback: Box::new(listener) }
+        Listener { event: event_type, handle: handle, callback: RefCell::new(Box::new(listener)) }
     }
 
-    pub fn call(&mut self, event: Event) {
-        let ref mut func = self.callback;
-        func(event);
+    pub fn call(&self, event: Event, dazeus: &DaZeus<T>) {
+        let mut fbox = self.callback.borrow_mut();
+        let mut func = fbox.deref_mut();
+        func(event, dazeus);
     }
 
     pub fn has_handle(&self, handle: ListenerHandle) -> bool {

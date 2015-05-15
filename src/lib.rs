@@ -89,7 +89,7 @@ pub use self::scope::*;
 mod connection;
 mod dazeus;
 mod event;
-mod handlers;
+mod handler;
 mod listener;
 mod request;
 mod response;

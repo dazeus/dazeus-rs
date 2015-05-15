@@ -1,11 +1,12 @@
 use std::io::{Read, Write};
 use super::event::{Event, EventType};
-use super::handlers::{Handler, Message};
+use super::handler::{Handler, Message};
 use super::listener::{ListenerHandle, Listener};
 use super::request::{ConfigGroup, Request};
 use super::response::Response;
 use super::scope::Scope;
 use super::error::{ReceiveError, Error};
+use std::cell::RefCell;
 
 
 /// The base DaZeus struct.
@@ -13,8 +14,8 @@ use super::error::{ReceiveError, Error};
 /// See the [crate documentation](./index.html) for a more detailed instruction on how to get
 /// started with these DaZeus bindings.
 pub struct DaZeus<'a, T> where T: Read + Write {
-    handler: Handler<T>,
-    listeners: Vec<Listener<'a>>,
+    handler: RefCell<Handler<T>>,
+    listeners: Vec<Listener<'a, T>>,
     current_handle: u64,
 }
 
@@ -22,23 +23,23 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// Create a new instance of DaZeus from the given connection.
     pub fn new(conn: T) -> DaZeus<'a, T> {
         DaZeus {
-            handler: Handler::new(conn),
+            handler: RefCell::new(Handler::new(conn)),
             listeners: Vec::new(),
             current_handle: 1
         }
     }
 
-    fn next_response(&mut self) -> Result<Response, Error> {
+    fn next_response(&self) -> Result<Response, Error> {
         loop {
-            match try!(self.handler.read()) {
+            match try!(self.handler.borrow_mut().read()) {
                 Message::Event(e) => self.handle_event(e),
                 Message::Response(r) => return Ok(r),
             }
         }
     }
 
-    fn try_next_event(&mut self) -> Result<Event, Error> {
-        match try!(self.handler.read()) {
+    fn try_next_event(&self) -> Result<Event, Error> {
+        match try!(self.handler.borrow_mut().read()) {
             Message::Event(e) => {
                 self.handle_event(e.clone());
                 Ok(e)
@@ -47,7 +48,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         }
     }
 
-    fn next_event(&mut self) -> Event {
+    fn next_event(&self) -> Event {
         match self.try_next_event() {
             Ok(evt) => evt,
             Err(e) => panic!("{}", e),
@@ -55,7 +56,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a request to DaZeus and retrieve a Future in which the response will be contained.
-    pub fn send(&mut self, request: Request) -> Response {
+    pub fn send(&self, request: Request) -> Response {
         match self.try_send(request) {
             Ok(response) => response,
             Err(e) => panic!("{}", e),
@@ -63,22 +64,22 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Try to send a request to DaZeus
-    pub fn try_send(&mut self, request: Request) -> Result<Response, Error> {
-        try!(self.handler.write(request));
+    pub fn try_send(&self, request: Request) -> Result<Response, Error> {
+        try!(self.handler.borrow_mut().write(request));
         self.next_response()
     }
 
     /// Handle an event received by calling all event listeners listening for that event type.
-    fn handle_event(&mut self, event: Event) {
-        for listener in self.listeners.iter_mut() {
+    fn handle_event(&self, event: Event) {
+        for listener in self.listeners.iter() {
             if listener.event == event.event {
-                listener.call(event.clone());
+                listener.call(event.clone(), self);
             }
         }
     }
 
     /// Loop wait for messages to receive in a blocking way.
-    pub fn listen(&mut self) -> Result<(), Error> {
+    pub fn listen(&self) -> Result<(), Error> {
         loop {
             try!(self.try_next_event());
         }
@@ -86,7 +87,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to an event type and call the callback function every time such an event occurs.
     pub fn subscribe<F>(&mut self, event: EventType, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event) + 'a
+        where F: FnMut(Event, &DaZeus<T>) + 'a
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
@@ -103,7 +104,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to a command and call the callback function every time such a command occurs.
     pub fn subscribe_command<F>(&mut self, command: &str, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event) + 'a
+        where F: FnMut(Event, &DaZeus<T>) + 'a
     {
         self.subscribe(EventType::Command(command.to_string()), callback)
     }
@@ -143,22 +144,22 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Check if there is any active listener for the given event type.
-    pub fn has_any_subscription(&mut self, event: EventType) -> bool {
+    pub fn has_any_subscription(&self, event: EventType) -> bool {
         self.listeners.iter().any(|&ref l| l.event == event)
     }
 
     /// Retrieve the networks the bot is connected to.
-    pub fn networks(&mut self) -> Response {
+    pub fn networks(&self) -> Response {
         self.send(Request::Networks)
     }
 
     /// Retrieve the channels the bot is in for a given network.
-    pub fn channels(&mut self, network: &str) -> Response {
+    pub fn channels(&self, network: &str) -> Response {
         self.send(Request::Channels(network.to_string()))
     }
 
     /// Send a message to a specific channel using the PRIVMSG method.
-    pub fn message(&mut self, network: &str, channel: &str, message: &str) -> Response {
+    pub fn message(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Message(
             network.to_string(),
             channel.to_string(),
@@ -167,7 +168,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP NOTICE to a specific channel.
-    pub fn notice(&mut self, network: &str, channel: &str, message: &str) -> Response {
+    pub fn notice(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Notice(
             network.to_string(),
             channel.to_string(),
@@ -176,7 +177,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP REQUEST to a specific channel.
-    pub fn ctcp(&mut self, network: &str, channel: &str, message: &str) -> Response {
+    pub fn ctcp(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Ctcp(
             network.to_string(),
             channel.to_string(),
@@ -185,7 +186,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP REPLY to a specific channel.
-    pub fn ctcp_reply(&mut self, network: &str, channel: &str, message: &str) -> Response {
+    pub fn ctcp_reply(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::CtcpReply(
             network.to_string(),
             channel.to_string(),
@@ -194,7 +195,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP ACTION to a specific channel
-    pub fn action(&mut self, network: &str, channel: &str, message: &str) -> Response {
+    pub fn action(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Action(
             network.to_string(),
             channel.to_string(),
@@ -208,7 +209,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// The Response will only indicate whether or not the request has been submitted successfully.
     /// The server may respond with an `EventType::Names` event any time after this request has
     /// been submitted.
-    pub fn send_names(&mut self, network: &str, channel: &str) -> Response {
+    pub fn send_names(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Names(network.to_string(), channel.to_string()))
     }
 
@@ -218,27 +219,27 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// The Response will only indicate whether or not the request has been submitted successfully.
     /// The server may respond with an `EventType::Whois` event any time after this request has
     /// been submitted.
-    pub fn send_whois(&mut self, network: &str, nick: &str) -> Response {
+    pub fn send_whois(&self, network: &str, nick: &str) -> Response {
         self.send(Request::Whois(network.to_string(), nick.to_string()))
     }
 
     /// Try to join a channel on some network.
-    pub fn join(&mut self, network: &str, channel: &str) -> Response {
+    pub fn join(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Join(network.to_string(), channel.to_string()))
     }
 
     /// Try to leave a channel on some network.
-    pub fn part(&mut self, network: &str, channel: &str) -> Response {
+    pub fn part(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Part(network.to_string(), channel.to_string()))
     }
 
     /// Retrieve the nickname of the bot on the given network.
-    pub fn nick(&mut self, network: &str) -> Response {
+    pub fn nick(&self, network: &str) -> Response {
         self.send(Request::Nick(network.to_string()))
     }
 
     /// Send a handshake to the DaZeus core.
-    pub fn handshake(&mut self, name: &str, version: &str, config: Option<&str>) -> Response {
+    pub fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Response {
         let n = name.to_string();
         let v = version.to_string();
         let req = match config {
@@ -249,49 +250,49 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Retrieve a config value from the DaZeus config.
-    pub fn get_config(&mut self, name: &str, group: ConfigGroup) -> Response {
+    pub fn get_config(&self, name: &str, group: ConfigGroup) -> Response {
         self.send(Request::Config(name.to_string(), group))
     }
 
     /// Retrieve the character that is used by the bot for highlighting.
-    pub fn get_highlight_char(&mut self) -> Response {
+    pub fn get_highlight_char(&self) -> Response {
         self.get_config("highlight", ConfigGroup::Core)
     }
 
     /// Retrieve a property stored in the bot database.
-    pub fn get_property(&mut self, name: &str, scope: Scope) -> Response {
+    pub fn get_property(&self, name: &str, scope: Scope) -> Response {
         self.send(Request::GetProperty(name.to_string(), scope))
     }
 
     /// Set a property to be stored in the bot database.
-    pub fn set_property(&mut self, name: &str, value: &str, scope: Scope) -> Response {
+    pub fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response {
         self.send(Request::SetProperty(name.to_string(), value.to_string(), scope))
     }
 
     /// Remove a property stored in the bot database.
-    pub fn unset_property(&mut self, name: &str, scope: Scope) -> Response {
+    pub fn unset_property(&self, name: &str, scope: Scope) -> Response {
         self.send(Request::UnsetProperty(name.to_string(), scope))
     }
 
     /// Retrieve a list of keys starting with the common prefix with the given scope.
-    pub fn get_property_keys(&mut self, prefix: &str, scope: Scope) -> Response {
+    pub fn get_property_keys(&self, prefix: &str, scope: Scope) -> Response {
         self.send(Request::PropertyKeys(prefix.to_string(), scope))
     }
 
     /// Set a permission to either allow or deny for a specific scope.
-    pub fn set_permission(&mut self, permission: &str, allow: bool, scope: Scope) -> Response {
+    pub fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Response {
         self.send(Request::SetPermission(permission.to_string(), allow, scope))
     }
 
     /// Retrieve whether for some scope the given permission was set.
     ///
     /// Will return the default if it was not.
-    pub fn has_permission(&mut self, permission: &str, default: bool, scope: Scope) -> Response {
+    pub fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response {
         self.send(Request::HasPermission(permission.to_string(), default, scope))
     }
 
     /// Remove a set permission from the bot.
-    pub fn unset_permission(&mut self, permission: &str, scope: Scope) -> Response {
+    pub fn unset_permission(&self, permission: &str, scope: Scope) -> Response {
         self.send(Request::UnsetPermission(permission.to_string(), scope))
     }
 
@@ -347,7 +348,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply(&mut self, event: &Event, message: &str, highlight: bool) -> Response {
+    pub fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
@@ -370,7 +371,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply_with_notice(&mut self, event: &Event, message: &str) -> Response {
+    pub fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
@@ -388,7 +389,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply_with_action(&mut self, event: &Event, message: &str) -> Response {
+    pub fn reply_with_action(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
