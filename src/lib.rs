@@ -7,35 +7,22 @@
 //! the creation of a `Connection`, which can be fed directly to the `DaZeus::from_conn`
 //! constructor.
 //!
-//! For many connections it is recommended to use a buffered Read+Write. This allows the stream
-//! to flush a whole Json object (no matter the size) at once using an internal buffer, instead of
-//! depending on the underlying system. To use a buffered connection with a `Connection` object,
-//! use the `DaZeus::from_conn_buff` constructor.
-//!
 //! Creating a new connection can now be done using the following basic snippet:
 //!
 //! ```
-//! match connection_from_str(socket) {
-//!     Ok(connection) => {
-//!         let dazeus = DaZeus::from_conn_buff(connection);
-//!     },
-//!     Err(e) => {
-//!         println!("Got an error while trying to connect to DaZeus: {}", e);
-//!     }
-//! }
+//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
 //! ```
 //!
 //! After having created an instance of DaZeus you can start sending commands using one of the
-//! methods provided in the `Commander` trait. Alternatively you can send Request objects directly
-//! using the `DaZeus::send()` method, however this is generally not recommended.
+//! methods provided. Alternatively you can send Request objects directly using the
+//! `DaZeus::send()` method, however this is generally not recommended.
 //!
-//! You can register new listeners using the `Commander::subscribe()` and
-//! `Commander::SubscribeCommand()` methods. You provide these with functions which will be called
+//! You can register new listeners using the `DaZeus::subscribe()` and
+//! `DaZeus::subscribeCommand()` methods. You provide these with functions which will be called
 //! every time such an event occurs.
 //!
 //! After you have enabled any event subscribers you need to use the `DaZeus::listen()` method,
-//! or check for new events manually using either the blocking `DaZeus::next_event()` or the
-//! non-blocking `DaZeus::try_next_event()`.
+//! or check for new events manually using `DaZeus::try_next_event()`.
 //!
 //! # Examples
 //! The example below creates a simple echo server which responds to some PrivMsg with the exact
@@ -44,16 +31,11 @@
 //!
 //! ```
 //! let socket = "unix:/tmp/dazeus.sock";
-//! match connection_from_str(socket) {
-//!     Ok(connection) => {
-//!         let dazeus = DaZeus::from_conn_buff(connection);
-//!         dazeus.subscribe(EventType::PrivMsg, |evt| {
-//!             dazeus.reply(&evt, &evt[3], true);
-//!         });
-//!         dazeus.listen();
-//!     },
-//!     Err(e) => println!("Could not connect to DaZeus: {}", e);
-//! }
+//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
+//! dazeus.subscribe(EventType::PrivMsg, |evt, dazeus| {
+//!     dazeus.reply(&evt, &evt[3], true);
+//! });
+//! dazeus.listen();
 //! ```
 //!
 //! The example below creates a connection to the DaZeus server and then immediately joins a
@@ -63,13 +45,8 @@
 //!
 //! ```
 //! let socket = "unix:/tmp/dazeus.sock";
-//! match connection_from_str(socket) {
-//!     Ok(connection) => {
-//!         let dazeus = DaZeus::from_conn_buff(connection);
-//!         dazeus.join("local", "#test").into_inner();
-//!     },
-//!     Err(e) => println!("Could not connect to DaZeus: {}", e);
-//! }
+//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
+//! dazeus.join("local", "#test");
 //! ```
 
 #[macro_use]

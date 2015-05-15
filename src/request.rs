@@ -62,8 +62,8 @@ impl FromStr for ConfigGroup {
 /// An enum of all requests that can be sent to your DaZeus instance.
 ///
 /// Note that typically you won't create these request instances directly. Instead you can use the
-/// different `Commander` trait methods. However if you wish, you can directly use `DaZeus::send()`
-/// to send these requests yourself.
+/// different `DaZeus` methods. However if you wish, you can directly use `DaZeus::send()` to send
+/// these requests yourself.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Request {
     /// Subscribe to a certain event type.
