@@ -34,7 +34,8 @@
                      "macro",
                      "primitive",
                      "associatedtype",
-                     "constant"];
+                     "constant",
+                     "associatedconstant"];
 
     $('.js-only').removeClass('js-only');
 
@@ -78,9 +79,11 @@
             return;
         }
 
-        if (e.which === 191 && $('#help').hasClass('hidden')) { // question mark
-            e.preventDefault();
-            $('#help').removeClass('hidden');
+        if (e.which === 191) { // question mark
+            if (e.shiftKey && $('#help').hasClass('hidden')) {
+                e.preventDefault();
+                $('#help').removeClass('hidden');
+            }
         } else if (e.which === 27) { // esc
             if (!$('#help').hasClass('hidden')) {
                 e.preventDefault();
@@ -468,6 +471,8 @@
                     if ($active.length) {
                         document.location.href = $active.find('a').prop('href');
                     }
+                } else {
+                  $active.removeClass('highlighted');
                 }
             });
         }
@@ -713,10 +718,12 @@
                 if (crates[i] == window.currentCrate) {
                     klass += ' current';
                 }
-                var desc = rawSearchIndex[crates[i]].items[0][3];
-                div.append($('<a>', {'href': '../' + crates[i] + '/index.html',
-                                     'title': plainSummaryLine(desc),
-                                     'class': klass}).text(crates[i]));
+                if (rawSearchIndex[crates[i]].items[0]) {
+                    var desc = rawSearchIndex[crates[i]].items[0][3];
+                    div.append($('<a>', {'href': '../' + crates[i] + '/index.html',
+                                         'title': plainSummaryLine(desc),
+                                         'class': klass}).text(crates[i]));
+                }
             }
             sidebar.append(div);
         }
@@ -796,34 +803,58 @@
     if (query['gotosrc']) {
         window.location = $('#src-' + query['gotosrc']).attr('href');
     }
+    if (query['gotomacrosrc']) {
+        window.location = $('.srclink').attr('href');
+    }
 
-    $("#expand-all").on("click", function() {
-        $(".docblock").show();
-        $(".toggle-label").hide();
-        $(".toggle-wrapper").removeClass("collapsed");
-        $(".collapse-toggle").children(".inner").html("-");
-    });
+    function labelForToggleButton(sectionIsCollapsed) {
+        if (sectionIsCollapsed) {
+            // button will expand the section
+            return "+";
+        } else {
+            // button will collapse the section
+            // note that this text is also set in the HTML template in render.rs
+            return "\u2212"; // "\u2212" is '−' minus sign
+        }
+    }
 
-    $("#collapse-all").on("click", function() {
-        $(".docblock").hide();
-        $(".toggle-label").show();
-        $(".toggle-wrapper").addClass("collapsed");
-        $(".collapse-toggle").children(".inner").html("+");
+    $("#toggle-all-docs").on("click", function() {
+        var toggle = $("#toggle-all-docs");
+        if (toggle.hasClass("will-expand")) {
+            toggle.removeClass("will-expand");
+            toggle.children(".inner").text(labelForToggleButton(false));
+            toggle.attr("title", "collapse all docs");
+            $(".docblock").show();
+            $(".toggle-label").hide();
+            $(".toggle-wrapper").removeClass("collapsed");
+            $(".collapse-toggle").children(".inner").text(labelForToggleButton(false));
+        } else {
+            toggle.addClass("will-expand");
+            toggle.children(".inner").text(labelForToggleButton(true));
+            toggle.attr("title", "expand all docs");
+            $(".docblock").hide();
+            $(".toggle-label").show();
+            $(".toggle-wrapper").addClass("collapsed");
+            $(".collapse-toggle").children(".inner").text(labelForToggleButton(true));
+        }
     });
 
     $(document).on("click", ".collapse-toggle", function() {
         var toggle = $(this);
         var relatedDoc = toggle.parent().next();
+        if (relatedDoc.is(".stability")) {
+            relatedDoc = relatedDoc.next();
+        }
         if (relatedDoc.is(".docblock")) {
             if (relatedDoc.is(":visible")) {
                 relatedDoc.slideUp({duration:'fast', easing:'linear'});
                 toggle.parent(".toggle-wrapper").addClass("collapsed");
-                toggle.children(".inner").html("+");
+                toggle.children(".inner").text(labelForToggleButton(true));
                 toggle.children(".toggle-label").fadeIn();
             } else {
                 relatedDoc.slideDown({duration:'fast', easing:'linear'});
                 toggle.parent(".toggle-wrapper").removeClass("collapsed");
-                toggle.children(".inner").html("-");
+                toggle.children(".inner").text(labelForToggleButton(false));
                 toggle.children(".toggle-label").hide();
             }
         }
@@ -831,12 +862,14 @@
 
     $(function() {
         var toggle = $("<a/>", {'href': 'javascript:void(0)', 'class': 'collapse-toggle'})
-            .html("[<span class='inner'>-</span>]");
+            .html("[<span class='inner'></span>]");
+        toggle.children(".inner").text(labelForToggleButton(false));
 
         $(".method").each(function() {
-           if ($(this).next().is(".docblock")) {
-               $(this).children().first().after(toggle.clone());
-           }
+            if ($(this).next().is(".docblock") ||
+                ($(this).next().is(".stability") && $(this).next().next().is(".docblock"))) {
+                    $(this).children().first().after(toggle.clone());
+            }
         });
 
         var mainToggle =

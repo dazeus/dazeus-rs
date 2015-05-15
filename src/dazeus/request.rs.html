@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/Users/toolskyn/Projects/rust/dazeus-karma/dazeus-rs/src/request.rs`.">
+    <meta name="description" content="Source to the Rust file `src/request.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>request.rs.html -- source</title>
@@ -492,6 +492,7 @@
 <span id="450">450</span>
 <span id="451">451</span>
 <span id="452">452</span>
+<span id="453">453</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>scope</span>::<span class='ident'>Scope</span>;
 <span class='kw'>use</span> <span class='ident'>serialize</span>::<span class='ident'>json</span>::{<span class='ident'>Json</span>, <span class='ident'>ToJson</span>, <span class='ident'>Object</span>, <span class='ident'>Array</span>};
@@ -499,6 +500,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>string</span>::<span class='ident'>ToString</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>error</span>::<span class='ident'>ParseConfigGroupError</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 
 <span class='doccomment'>/// The version of the DaZeus plugin communication protocol that these bindings understand.</span>
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PROTOCOL_VERSION</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;1&quot;</span>;
@@ -535,8 +537,8 @@
 <span class='kw'>impl</span> <span class='ident'>ToString</span> <span class='kw'>for</span> <span class='ident'>ConfigGroup</span> {
     <span class='kw'>fn</span> <span class='ident'>to_string</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>ConfigGroup</span>::<span class='ident'>Plugin</span> <span class='op'>=&gt;</span> <span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;plugin&quot;</span>),
-            <span class='ident'>ConfigGroup</span>::<span class='ident'>Core</span> <span class='op'>=&gt;</span> <span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;core&quot;</span>),
+            <span class='ident'>ConfigGroup</span>::<span class='ident'>Plugin</span> <span class='op'>=&gt;</span> <span class='string'>&quot;plugin&quot;</span>.<span class='ident'>to_string</span>(),
+            <span class='ident'>ConfigGroup</span>::<span class='ident'>Core</span> <span class='op'>=&gt;</span> <span class='string'>&quot;core&quot;</span>.<span class='ident'>to_string</span>(),
         }
     }
 }
@@ -545,7 +547,7 @@
     <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> <span class='ident'>ParseConfigGroupError</span>;
 
     <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ParseConfigGroupError</span><span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>to_lowercase</span>()[..] {
+        <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>s</span>.<span class='ident'>to_ascii_lowercase</span>()[..] {
             <span class='string'>&quot;plugin&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ConfigGroup</span>::<span class='ident'>Plugin</span>),
             <span class='string'>&quot;core&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ConfigGroup</span>::<span class='ident'>Core</span>),
             _ <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseConfigGroupError</span>::<span class='ident'>new</span>())
@@ -556,8 +558,8 @@
 <span class='doccomment'>/// An enum of all requests that can be sent to your DaZeus instance.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Note that typically you won&#39;t create these request instances directly. Instead you can use the</span>
-<span class='doccomment'>/// different `Commander` trait methods. However if you wish, you can directly use `DaZeus::send()`</span>
-<span class='doccomment'>/// to send these requests yourself.</span>
+<span class='doccomment'>/// different `DaZeus` methods. However if you wish, you can directly use `DaZeus::send()` to send</span>
+<span class='doccomment'>/// these requests yourself.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Request</span> {
     <span class='doccomment'>/// Subscribe to a certain event type.</span>
@@ -580,8 +582,8 @@
     <span class='ident'>Unsubscribe</span>(<span class='ident'>EventType</span>),
     <span class='doccomment'>/// Subscribe to a command (optionally on a specific network).</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// You can use `Request::Subscribe(EventType::Command(String::from_str(&quot;example&quot;))` as an</span>
-    <span class='doccomment'>/// alternative to `Request::SubscribeCommand(String::from_str(&quot;example&quot;))`. Note that the</span>
+    <span class='doccomment'>/// You can use `Request::Subscribe(EventType::Command(&quot;example&quot;.to_string())` as an</span>
+    <span class='doccomment'>/// alternative to `Request::SubscribeCommand(&quot;example&quot;.to_string())`. Note that the</span>
     <span class='doccomment'>/// former does not allow you to optionally specify a network on which the command is actively</span>
     <span class='doccomment'>/// listened to.</span>
     <span class='doccomment'>///</span>
@@ -800,7 +802,7 @@
             <span class='ident'>Request</span>::<span class='ident'>UnsetPermission</span>(_, _) <span class='op'>=&gt;</span> <span class='string'>&quot;permission&quot;</span>,
         };
 
-        <span class='ident'>Json</span>::<span class='ident'>String</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>s</span>))
+        <span class='ident'>Json</span>::<span class='ident'>String</span>(<span class='ident'>s</span>.<span class='ident'>to_string</span>())
     }
 
     <span class='kw'>fn</span> <span class='ident'>get_action_type</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
@@ -809,7 +811,7 @@
             _ <span class='op'>=&gt;</span> <span class='string'>&quot;do&quot;</span>,
         };
 
-        <span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>s</span>)
+        <span class='ident'>s</span>.<span class='ident'>to_string</span>()
     }
 }
 
@@ -871,13 +873,13 @@
             <span class='ident'>Request</span>::<span class='ident'>Handshake</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, <span class='kw-2'>ref</span> <span class='ident'>version</span>, <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>config_name</span>)) <span class='op'>=&gt;</span> {
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>name</span>);
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>version</span>);
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>PROTOCOL_VERSION</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>PROTOCOL_VERSION</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>config_name</span>);
             },
             <span class='ident'>Request</span>::<span class='ident'>Handshake</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, <span class='kw-2'>ref</span> <span class='ident'>version</span>, <span class='prelude-val'>None</span>) <span class='op'>=&gt;</span> {
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>name</span>);
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>version</span>);
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>PROTOCOL_VERSION</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>PROTOCOL_VERSION</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>name</span>);
             },
             <span class='ident'>Request</span>::<span class='ident'>Config</span>(<span class='kw-2'>ref</span> <span class='ident'>key</span>, <span class='kw-2'>ref</span> <span class='ident'>ctype</span>) <span class='op'>=&gt;</span> {
@@ -885,61 +887,61 @@
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>ctype</span>.<span class='ident'>to_string</span>());
             },
             <span class='ident'>Request</span>::<span class='ident'>GetProperty</span>(<span class='kw-2'>ref</span> <span class='ident'>property</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;get&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;get&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>property</span>);
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>SetProperty</span>(<span class='kw-2'>ref</span> <span class='ident'>property</span>, <span class='kw-2'>ref</span> <span class='ident'>value</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;set&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;set&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>property</span>);
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>value</span>);
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>UnsetProperty</span>(<span class='kw-2'>ref</span> <span class='ident'>property</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;unset&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;unset&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>property</span>);
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>PropertyKeys</span>(<span class='kw-2'>ref</span> <span class='ident'>prefix</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;keys&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;keys&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>prefix</span>);
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>SetPermission</span>(<span class='kw-2'>ref</span> <span class='ident'>permission</span>, <span class='kw-2'>ref</span> <span class='ident'>default</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;set&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;set&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>permission</span>);
                 <span class='ident'>params</span>.<span class='ident'>push</span>(<span class='ident'>Json</span>::<span class='ident'>Boolean</span>(<span class='op'>*</span><span class='ident'>default</span>));
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>HasPermission</span>(<span class='kw-2'>ref</span> <span class='ident'>permission</span>, <span class='kw-2'>ref</span> <span class='ident'>default</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;get&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;get&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>permission</span>);
                 <span class='ident'>params</span>.<span class='ident'>push</span>(<span class='ident'>Json</span>::<span class='ident'>Boolean</span>(<span class='op'>*</span><span class='ident'>default</span>));
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
             <span class='ident'>Request</span>::<span class='ident'>UnsetPermission</span>(<span class='kw-2'>ref</span> <span class='ident'>permission</span>, <span class='kw-2'>ref</span> <span class='ident'>scope</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;unset&quot;</span>));
+                <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='string'>&quot;unset&quot;</span>.<span class='ident'>to_string</span>());
                 <span class='macro'>push_str</span><span class='macro'>!</span>(<span class='ident'>permission</span>);
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>scope</span>.<span class='ident'>is_any</span>() {
-                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;scope&quot;</span>), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
+                    <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;scope&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>.<span class='ident'>to_json</span>());
                 }
             },
         }
 
         <span class='kw'>if</span> <span class='ident'>params</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
-            <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;params&quot;</span>), <span class='ident'>Json</span>::<span class='ident'>Array</span>(<span class='ident'>params</span>));
+            <span class='ident'>obj</span>.<span class='ident'>insert</span>(<span class='string'>&quot;params&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>Json</span>::<span class='ident'>Array</span>(<span class='ident'>params</span>));
         }
 
         <span class='ident'>Json</span>::<span class='ident'>Object</span>(<span class='ident'>obj</span>)
@@ -978,6 +980,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

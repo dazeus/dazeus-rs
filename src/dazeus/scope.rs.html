@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/Users/toolskyn/Projects/rust/dazeus-karma/dazeus-rs/src/scope.rs`.">
+    <meta name="description" content="Source to the Rust file `src/scope.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>scope.rs.html -- source</title>
@@ -167,22 +167,22 @@
 
     <span class='doccomment'>/// Scope to a specific network</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>network</span>(<span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Scope</span> {
-        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>network</span>)), <span class='prelude-val'>None</span>, <span class='prelude-val'>None</span>)
+        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>None</span>, <span class='prelude-val'>None</span>)
     }
 
     <span class='doccomment'>/// Scope to a specific sender (typically a channel)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sender</span>(<span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>sender</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Scope</span> {
-        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>network</span>)), <span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>sender</span>)), <span class='prelude-val'>None</span>)
+        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>Some</span>(<span class='ident'>sender</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>None</span>)
     }
 
     <span class='doccomment'>/// Scope to a specific receiver (typically a user)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>receiver</span>(<span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>receiver</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Scope</span> {
-        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>network</span>)), <span class='prelude-val'>None</span>, <span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>receiver</span>)))
+        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>None</span>, <span class='prelude-val'>Some</span>(<span class='ident'>receiver</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Scope to a specific receiver and channel (typically a user in a channel)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to</span>(<span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>sender</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>receiver</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Scope</span> {
-        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>network</span>)), <span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>sender</span>)), <span class='prelude-val'>Some</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='ident'>receiver</span>)))
+        <span class='ident'>Scope</span>::<span class='ident'>new</span>(<span class='prelude-val'>Some</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>Some</span>(<span class='ident'>sender</span>.<span class='ident'>to_string</span>()), <span class='prelude-val'>Some</span>(<span class='ident'>receiver</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Checks whether the scope is set to be applied to everything.</span>
@@ -242,6 +242,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

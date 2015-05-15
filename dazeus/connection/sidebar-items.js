@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Connection","A connection enum that encapsulates TCP and Unix sockets."]],"fn":[["connection_from_str","Takes a string in the format type:connection_str and tries to connect to that location. Returns the connection inside an enum that can be used inside DaZeus directly."]]});
+initSidebarItems({"enum":[["Connection","A connection enum that encapsulates TCP and Unix sockets."]]});
