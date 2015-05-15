@@ -10,7 +10,7 @@
 //! Creating a new connection can now be done using the following basic snippet:
 //!
 //! ```
-//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
+//! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! ```
 //!
 //! After having created an instance of DaZeus you can start sending commands using one of the
@@ -31,7 +31,7 @@
 //!
 //! ```
 //! let socket = "unix:/tmp/dazeus.sock";
-//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
+//! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.subscribe(EventType::PrivMsg, |evt, dazeus| {
 //!     dazeus.reply(&evt, &evt[3], true);
 //! });
@@ -45,7 +45,7 @@
 //!
 //! ```
 //! let socket = "unix:/tmp/dazeus.sock";
-//! let dazeus = DaZeus::from_conn(Connection::from_str(socket).unwrap());
+//! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.join("local", "#test");
 //! ```
 

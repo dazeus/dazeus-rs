@@ -30,7 +30,7 @@ Then start by using this basic skeleton application in your `main.rs`:
 extern crate dazeus;
 extern crate docopt;
 
-use dazeus::{DaZeus, Commander, EventType, connection_from_str};
+use dazeus::{DaZeus, EventType, Connection};
 use docopt::Docopt;
 
 // Write the Docopt usage string.
@@ -50,25 +50,15 @@ Options:
 fn main() {
     let args = Docopt::new(USAGE).and_then(|d| d.parse()).unwrap_or_else(|e| e.exit());
     let socket = args.get_str("--socket");
+    let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
+    dazeus.subscribe(EventType::PrivMsg, |evt, dazeus| {
+        // reply requires an event, and a message (the third event
+        // parameter is the message sent to us)
+        dazeus.reply(&evt, &evt[3], true);
+    });
 
-    match connection_from_str(socket) {
-        Ok(connection) => {
-            let dazeus = DaZeus::from_conn_buff(connection);
-
-            // echo all messages
-            dazeus.subscribe(EventType::PrivMsg, |evt| {
-                // reply requires an event, and a message (the third event
-                // parameter is the message sent to us)
-                dazeus.reply(&evt, &evt[3], true);
-            });
-
-            // start listening for events
-            dazeus.listen();
-        },
-        Err(e) => {
-            println!("Got an error while trying to connect to DaZeus: {}", e);
-        }
-    }
+    // We unwrap the result, which we will retrieve when listening has failed
+    dazeus.listen().unwrap();
 }
 ```
 
