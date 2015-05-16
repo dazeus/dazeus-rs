@@ -31,7 +31,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     fn next_response(&self) -> Result<Response, Error> {
         loop {
-            match try!(self.handler.borrow_mut().read()) {
+            let msg = self.handler.borrow_mut().read();
+            match try!(msg) {
                 Message::Event(e) => self.handle_event(e),
                 Message::Response(r) => return Ok(r),
             }
@@ -39,7 +40,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     fn try_next_event(&self) -> Result<Event, Error> {
-        match try!(self.handler.borrow_mut().read()) {
+        let msg = self.handler.borrow_mut().read();
+        match try!(msg) {
             Message::Event(e) => {
                 self.handle_event(e.clone());
                 Ok(e)
