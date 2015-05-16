@@ -1,6 +1,6 @@
 [package]
 name = "dazeus"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Ruben Nijveld <ruben@gewooniets.nl>"]
 description = "Dazeus IRC bot bindings for rust"
 documentation = "http://dazeus.github.io/dazeus-rs/dazeus/index.html"

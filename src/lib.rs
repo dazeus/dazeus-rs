@@ -18,7 +18,7 @@
 //! `DaZeus::send()` method, however this is generally not recommended.
 //!
 //! You can register new listeners using the `DaZeus::subscribe()` and
-//! `DaZeus::subscribeCommand()` methods. You provide these with functions which will be called
+//! `DaZeus::subscribe_command()` methods. You provide these with functions which will be called
 //! every time such an event occurs.
 //!
 //! After you have enabled any event subscribers you need to use the `DaZeus::listen()` method,
