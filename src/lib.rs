@@ -4,8 +4,7 @@
 //! instance. For users using OSX and Homebrew, a [tap is available](https://github.com/rnijveld/homebrew-dazeus).
 //!
 //! The best way to get started is by using the `connection_from_str` function provided. It allows
-//! the creation of a `Connection`, which can be fed directly to the `DaZeus::from_conn`
-//! constructor.
+//! the creation of a `Connection`, which can be fed directly to the `DaZeus::new` constructor.
 //!
 //! Creating a new connection can now be done using the following basic snippet:
 //!
@@ -15,7 +14,7 @@
 //!
 //! After having created an instance of DaZeus you can start sending commands using one of the
 //! methods provided. Alternatively you can send Request objects directly using the
-//! `DaZeus::send()` method, however this is generally not recommended.
+//! `DaZeusClient::send()` method, however this is generally not recommended.
 //!
 //! You can register new listeners using the `DaZeus::subscribe()` and
 //! `DaZeus::subscribe_command()` methods. You provide these with functions which will be called

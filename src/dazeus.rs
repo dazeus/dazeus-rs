@@ -13,9 +13,9 @@ use std::cell::RefCell;
 ///
 /// See the [crate documentation](./index.html) for a more detailed instruction on how to get
 /// started with these DaZeus bindings.
-pub struct DaZeus<'a, T> where T: Read + Write {
+pub struct DaZeus<'a, T> {
     handler: RefCell<Handler<T>>,
-    listeners: Vec<Listener<'a, T>>,
+    listeners: Vec<Listener<'a>>,
     current_handle: u64,
 }
 
@@ -29,9 +29,16 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         }
     }
 
+    /// Loop wait for messages to receive in a blocking way.
+    pub fn listen(&self) -> Result<(), Error> {
+        loop {
+            try!(self.try_next_event());
+        }
+    }
+
     fn next_response(&self) -> Result<Response, Error> {
         loop {
-            let msg = self.handler.borrow_mut().read();
+            let msg = { self.handler.borrow_mut().read() };
             match try!(msg) {
                 Message::Event(e) => self.handle_event(e),
                 Message::Response(r) => return Ok(r),
@@ -40,7 +47,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     fn try_next_event(&self) -> Result<Event, Error> {
-        let msg = self.handler.borrow_mut().read();
+        let msg = { self.handler.borrow_mut().read() };
         match try!(msg) {
             Message::Event(e) => {
                 self.handle_event(e.clone());
@@ -57,20 +64,6 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         }
     }
 
-    /// Send a request to DaZeus and retrieve a Future in which the response will be contained.
-    pub fn send(&self, request: Request) -> Response {
-        match self.try_send(request) {
-            Ok(response) => response,
-            Err(e) => panic!("{}", e),
-        }
-    }
-
-    /// Try to send a request to DaZeus
-    pub fn try_send(&self, request: Request) -> Result<Response, Error> {
-        try!(self.handler.borrow_mut().write(request));
-        self.next_response()
-    }
-
     /// Handle an event received by calling all event listeners listening for that event type.
     fn handle_event(&self, event: Event) {
         for listener in self.listeners.iter() {
@@ -80,16 +73,9 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         }
     }
 
-    /// Loop wait for messages to receive in a blocking way.
-    pub fn listen(&self) -> Result<(), Error> {
-        loop {
-            try!(self.try_next_event());
-        }
-    }
-
     /// Subscribe to an event type and call the callback function every time such an event occurs.
     pub fn subscribe<F>(&mut self, event: EventType, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeus<T>) + 'a
+        where F: FnMut(Event, &DaZeusClient) + 'a
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
@@ -106,13 +92,155 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to a command and call the callback function every time such a command occurs.
     pub fn subscribe_command<F>(&mut self, command: &str, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeus<T>) + 'a
+        where F: FnMut(Event, &DaZeusClient) + 'a
     {
         self.subscribe(EventType::Command(command.to_string()), callback)
     }
+}
+
+/// Methods for interaction with the DaZeus server.
+pub trait DaZeusClient<'a> {
+    /// Try to send a request to DaZeus
+    fn try_send(&self, request: Request) -> Result<Response, Error>;
+
+    /// Send a request to DaZeus and retrieve a Future in which the response will be contained.
+    fn send(&self, request: Request) -> Response;
 
     /// Unsubscribe a listener for some event.
-    pub fn unsubscribe(&mut self, handle: ListenerHandle) -> Response {
+    fn unsubscribe(&mut self, handle: ListenerHandle) -> Response;
+
+    /// Remove all subscriptions for a specific event type.
+    fn unsubscribe_all(&mut self, event: EventType) -> Response;
+
+    /// Check if there is any active listener for the given event type.
+    fn has_any_subscription(&self, event: EventType) -> bool;
+
+    /// Retrieve the networks the bot is connected to.
+    fn networks(&self) -> Response;
+
+    /// Retrieve the channels the bot is in for a given network.
+    fn channels(&self, network: &str) -> Response;
+
+    /// Send a message to a specific channel using the PRIVMSG method.
+    fn message(&self, network: &str, channel: &str, message: &str) -> Response;
+
+    /// Send a CTCP NOTICE to a specific channel.
+    fn notice(&self, network: &str, channel: &str, message: &str) -> Response;
+
+    /// Send a CTCP REQUEST to a specific channel.
+    fn ctcp(&self, network: &str, channel: &str, message: &str) -> Response;
+
+    /// Send a CTCP REPLY to a specific channel.
+    fn ctcp_reply(&self, network: &str, channel: &str, message: &str) -> Response;
+
+    /// Send a CTCP ACTION to a specific channel
+    fn action(&self, network: &str, channel: &str, message: &str) -> Response;
+
+    /// Send a request for the list of nicks in a channel.
+    ///
+    /// Note that the response will not contain the names data, instead listen for a names event.
+    /// The Response will only indicate whether or not the request has been submitted successfully.
+    /// The server may respond with an `EventType::Names` event any time after this request has
+    /// been submitted.
+    fn send_names(&self, network: &str, channel: &str) -> Response;
+
+    /// Send a request for a whois of a specific nick on some network.
+    ///
+    /// Note that the response will not contain the whois data, instead listen for a whois event.
+    /// The Response will only indicate whether or not the request has been submitted successfully.
+    /// The server may respond with an `EventType::Whois` event any time after this request has
+    /// been submitted.
+    fn send_whois(&self, network: &str, nick: &str) -> Response;
+
+    /// Try to join a channel on some network.
+    fn join(&self, network: &str, channel: &str) -> Response;
+
+    /// Try to leave a channel on some network.
+    fn part(&self, network: &str, channel: &str) -> Response;
+
+    /// Retrieve the nickname of the bot on the given network.
+    fn nick(&self, network: &str) -> Response;
+
+    /// Send a handshake to the DaZeus core.
+    fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Response;
+
+    /// Retrieve a config value from the DaZeus config.
+    fn get_config(&self, name: &str, group: ConfigGroup) -> Response;
+
+    /// Retrieve the character that is used by the bot for highlighting.
+    fn get_highlight_char(&self) -> Response;
+
+    /// Retrieve a property stored in the bot database.
+    fn get_property(&self, name: &str, scope: Scope) -> Response;
+
+    /// Set a property to be stored in the bot database.
+    fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response;
+
+    /// Remove a property stored in the bot database.
+    fn unset_property(&self, name: &str, scope: Scope) -> Response;
+
+    /// Retrieve a list of keys starting with the common prefix with the given scope.
+    fn get_property_keys(&self, prefix: &str, scope: Scope) -> Response;
+
+    /// Set a permission to either allow or deny for a specific scope.
+    fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Response;
+
+    /// Retrieve whether for some scope the given permission was set.
+    ///
+    /// Will return the default if it was not.
+    fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response;
+
+    /// Remove a set permission from the bot.
+    fn unset_permission(&self, permission: &str, scope: Scope) -> Response;
+
+    /// Send a whois request and wait for an event that answers this request (blocking).
+    ///
+    /// Note that the IRC server may not respond to the whois request (if it has been configured
+    /// this way), in which case this request will block forever.
+    fn whois(&mut self, network: &str, nick: &str) -> Event;
+
+    /// Send a names request and wait for an event that answers this request (blocking).
+    ///
+    /// Note that the IRC server may not respond to the names request (if it has been configured
+    /// this way), in which case this request will block forever.
+    fn names(&mut self, network: &str, channel: &str) -> Event;
+
+    /// Send a reply in response to some event.
+    ///
+    /// Note that not all types of events can be responded to. Mostly message type events
+    /// concerning some IRC user can be responded to. Join events can also be responded to.
+    fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response;
+
+    /// Send a reply (as a notice) in response to some event.
+    ///
+    /// Note that not all types of events can be responded to. Mostly message type events
+    /// concerning some IRC user can be responded to. Join events can also be responded to.
+    fn reply_with_notice(&self, event: &Event, message: &str) -> Response;
+
+    /// Send a reply (as a ctcp action) in response to some event.
+    ///
+    /// Note that not all types of events can be responded to. Mostly message type events
+    /// concerning some IRC user can be responded to. Join events can also be responded to.
+    fn reply_with_action(&self, event: &Event, message: &str) -> Response;
+}
+
+impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
+    /// Try to send a request to DaZeus
+    fn try_send(&self, request: Request) -> Result<Response, Error> {
+        { try!(self.handler.borrow_mut().write(request)) };
+        self.next_response()
+    }
+
+    /// Send a request to DaZeus and retrieve a Future in which the response will be contained.
+    fn send(&self, request: Request) -> Response {
+        match self.try_send(request) {
+            Ok(response) => response,
+            Err(e) => panic!("{}", e),
+        }
+    }
+
+    /// Unsubscribe a listener for some event.
+    fn unsubscribe(&mut self, handle: ListenerHandle) -> Response {
         // first find the event type
         let event = {
             match self.listeners.iter().find(|&ref l| l.has_handle(handle)) {
@@ -137,7 +265,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Remove all subscriptions for a specific event type.
-    pub fn unsubscribe_all(&mut self, event: EventType) -> Response {
+    fn unsubscribe_all(&mut self, event: EventType) -> Response {
         self.listeners.retain(|&ref l| l.event != event);
         match event {
             EventType::Command(_) => Response::for_success(),
@@ -146,22 +274,22 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Check if there is any active listener for the given event type.
-    pub fn has_any_subscription(&self, event: EventType) -> bool {
+    fn has_any_subscription(&self, event: EventType) -> bool {
         self.listeners.iter().any(|&ref l| l.event == event)
     }
 
     /// Retrieve the networks the bot is connected to.
-    pub fn networks(&self) -> Response {
+    fn networks(&self) -> Response {
         self.send(Request::Networks)
     }
 
     /// Retrieve the channels the bot is in for a given network.
-    pub fn channels(&self, network: &str) -> Response {
+    fn channels(&self, network: &str) -> Response {
         self.send(Request::Channels(network.to_string()))
     }
 
     /// Send a message to a specific channel using the PRIVMSG method.
-    pub fn message(&self, network: &str, channel: &str, message: &str) -> Response {
+    fn message(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Message(
             network.to_string(),
             channel.to_string(),
@@ -170,7 +298,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP NOTICE to a specific channel.
-    pub fn notice(&self, network: &str, channel: &str, message: &str) -> Response {
+    fn notice(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Notice(
             network.to_string(),
             channel.to_string(),
@@ -179,7 +307,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP REQUEST to a specific channel.
-    pub fn ctcp(&self, network: &str, channel: &str, message: &str) -> Response {
+    fn ctcp(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Ctcp(
             network.to_string(),
             channel.to_string(),
@@ -188,7 +316,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP REPLY to a specific channel.
-    pub fn ctcp_reply(&self, network: &str, channel: &str, message: &str) -> Response {
+    fn ctcp_reply(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::CtcpReply(
             network.to_string(),
             channel.to_string(),
@@ -197,7 +325,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Send a CTCP ACTION to a specific channel
-    pub fn action(&self, network: &str, channel: &str, message: &str) -> Response {
+    fn action(&self, network: &str, channel: &str, message: &str) -> Response {
         self.send(Request::Action(
             network.to_string(),
             channel.to_string(),
@@ -211,7 +339,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// The Response will only indicate whether or not the request has been submitted successfully.
     /// The server may respond with an `EventType::Names` event any time after this request has
     /// been submitted.
-    pub fn send_names(&self, network: &str, channel: &str) -> Response {
+    fn send_names(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Names(network.to_string(), channel.to_string()))
     }
 
@@ -221,27 +349,27 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// The Response will only indicate whether or not the request has been submitted successfully.
     /// The server may respond with an `EventType::Whois` event any time after this request has
     /// been submitted.
-    pub fn send_whois(&self, network: &str, nick: &str) -> Response {
+    fn send_whois(&self, network: &str, nick: &str) -> Response {
         self.send(Request::Whois(network.to_string(), nick.to_string()))
     }
 
     /// Try to join a channel on some network.
-    pub fn join(&self, network: &str, channel: &str) -> Response {
+    fn join(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Join(network.to_string(), channel.to_string()))
     }
 
     /// Try to leave a channel on some network.
-    pub fn part(&self, network: &str, channel: &str) -> Response {
+    fn part(&self, network: &str, channel: &str) -> Response {
         self.send(Request::Part(network.to_string(), channel.to_string()))
     }
 
     /// Retrieve the nickname of the bot on the given network.
-    pub fn nick(&self, network: &str) -> Response {
+    fn nick(&self, network: &str) -> Response {
         self.send(Request::Nick(network.to_string()))
     }
 
     /// Send a handshake to the DaZeus core.
-    pub fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Response {
+    fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Response {
         let n = name.to_string();
         let v = version.to_string();
         let req = match config {
@@ -252,49 +380,49 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Retrieve a config value from the DaZeus config.
-    pub fn get_config(&self, name: &str, group: ConfigGroup) -> Response {
+    fn get_config(&self, name: &str, group: ConfigGroup) -> Response {
         self.send(Request::Config(name.to_string(), group))
     }
 
     /// Retrieve the character that is used by the bot for highlighting.
-    pub fn get_highlight_char(&self) -> Response {
+    fn get_highlight_char(&self) -> Response {
         self.get_config("highlight", ConfigGroup::Core)
     }
 
     /// Retrieve a property stored in the bot database.
-    pub fn get_property(&self, name: &str, scope: Scope) -> Response {
+    fn get_property(&self, name: &str, scope: Scope) -> Response {
         self.send(Request::GetProperty(name.to_string(), scope))
     }
 
     /// Set a property to be stored in the bot database.
-    pub fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response {
+    fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response {
         self.send(Request::SetProperty(name.to_string(), value.to_string(), scope))
     }
 
     /// Remove a property stored in the bot database.
-    pub fn unset_property(&self, name: &str, scope: Scope) -> Response {
+    fn unset_property(&self, name: &str, scope: Scope) -> Response {
         self.send(Request::UnsetProperty(name.to_string(), scope))
     }
 
     /// Retrieve a list of keys starting with the common prefix with the given scope.
-    pub fn get_property_keys(&self, prefix: &str, scope: Scope) -> Response {
+    fn get_property_keys(&self, prefix: &str, scope: Scope) -> Response {
         self.send(Request::PropertyKeys(prefix.to_string(), scope))
     }
 
     /// Set a permission to either allow or deny for a specific scope.
-    pub fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Response {
+    fn set_permission(&self, permission: &str, allow: bool, scope: Scope) -> Response {
         self.send(Request::SetPermission(permission.to_string(), allow, scope))
     }
 
     /// Retrieve whether for some scope the given permission was set.
     ///
     /// Will return the default if it was not.
-    pub fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response {
+    fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response {
         self.send(Request::HasPermission(permission.to_string(), default, scope))
     }
 
     /// Remove a set permission from the bot.
-    pub fn unset_permission(&self, permission: &str, scope: Scope) -> Response {
+    fn unset_permission(&self, permission: &str, scope: Scope) -> Response {
         self.send(Request::UnsetPermission(permission.to_string(), scope))
     }
 
@@ -302,7 +430,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that the IRC server may not respond to the whois request (if it has been configured
     /// this way), in which case this request will block forever.
-    pub fn whois(&mut self, network: &str, nick: &str) -> Event {
+    fn whois(&mut self, network: &str, nick: &str) -> Event {
         if !self.has_any_subscription(EventType::Whois) {
             self.send(Request::Subscribe(EventType::Whois));
         }
@@ -326,7 +454,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that the IRC server may not respond to the names request (if it has been configured
     /// this way), in which case this request will block forever.
-    pub fn names(&mut self, network: &str, channel: &str) -> Event {
+    fn names(&mut self, network: &str, channel: &str) -> Event {
         if !self.has_any_subscription(EventType::Names) {
             self.send(Request::Subscribe(EventType::Names));
         }
@@ -350,7 +478,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
+    fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
@@ -373,7 +501,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
+    fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
@@ -391,7 +519,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
-    pub fn reply_with_action(&self, event: &Event, message: &str) -> Response {
+    fn reply_with_action(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
             let resp = self.nick(network);
             let nick = resp.get_str_or("nick", "");
@@ -413,6 +541,7 @@ fn targets_for_event(event: &Event) -> Option<(&str, &str, &str)> {
         | EventType::PrivMsg
         | EventType::Notice
         | EventType::Ctcp
+        | EventType::Command(_)
         | EventType::Action => Some((&params[0][..], &params[2][..], &params[1][..])),
         _ => None,
     }

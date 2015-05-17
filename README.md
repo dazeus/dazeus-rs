@@ -30,7 +30,7 @@ Then start by using this basic skeleton application in your `main.rs`:
 extern crate dazeus;
 extern crate docopt;
 
-use dazeus::{DaZeus, EventType, Connection};
+use dazeus::{DaZeus, DaZeusClient, EventType, Connection};
 use docopt::Docopt;
 
 // Write the Docopt usage string.

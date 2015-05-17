@@ -237,6 +237,11 @@ impl Event {
     pub fn param<'a>(&'a self, idx: usize) -> &'a str {
         &self.params[idx][..]
     }
+
+    /// Retrieve the number of parameters for the event.
+    pub fn len(&self) -> usize {
+        self.params.len()
+    }
 }
 
 impl<'b> Index<usize> for Event {

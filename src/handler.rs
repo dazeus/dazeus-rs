@@ -12,7 +12,7 @@ pub enum Message {
     Event(Event),
 }
 
-pub struct Handler<T> where T: Read + Write {
+pub struct Handler<T> {
     socket: T,
     buffer: Vec<u8>,
 }
@@ -24,11 +24,11 @@ impl<T> Handler<T> where T: Read + Write {
 
     pub fn read(&mut self) -> Result<Message, Error> {
         loop {
-            try!(self.retrieve_from_socket());
             if let Some((offset, len)) = self.find_message() {
-                debug!("Found message if buffer starting at {} with length {}", offset, len);
                 return self.make_message(offset, len);
             }
+
+            try!(self.retrieve_from_socket());
         }
     }
 
@@ -63,8 +63,10 @@ impl<T> Handler<T> where T: Read + Write {
         }
 
         if message_len > 0 && self.buffer.len() >= offset + message_len {
+            debug!("Found message in buffer starting at {} with length {}", offset, message_len);
             Some((offset, message_len))
         } else {
+            debug!("Found no complete message in buffer");
             None
         }
     }
@@ -85,9 +87,13 @@ impl<T> Handler<T> where T: Read + Write {
         let json = try!(try!(json_try));
 
         if is_event_json(&json) {
-            Ok(Message::Event(try!(Event::from_json(&json))))
+            let evt = try!(Event::from_json(&json));
+            debug!("Valid event received: {}", json);
+            Ok(Message::Event(evt))
         } else {
-            Ok(Message::Response(try!(Response::from_json(&json))))
+            let resp = try!(Response::from_json(&json));
+            debug!("Valid response received: {}", json);
+            Ok(Message::Response(resp))
         }
     }
 
