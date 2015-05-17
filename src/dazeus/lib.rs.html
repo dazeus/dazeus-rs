@@ -113,7 +113,6 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! DaZeus IRC bot bindings for [Rust](http://www.rust-lang.org/).</span>
 <span class='doccomment'>//!</span>
@@ -121,8 +120,7 @@
 <span class='doccomment'>//! instance. For users using OSX and Homebrew, a [tap is available](https://github.com/rnijveld/homebrew-dazeus).</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! The best way to get started is by using the `connection_from_str` function provided. It allows</span>
-<span class='doccomment'>//! the creation of a `Connection`, which can be fed directly to the `DaZeus::from_conn`</span>
-<span class='doccomment'>//! constructor.</span>
+<span class='doccomment'>//! the creation of a `Connection`, which can be fed directly to the `DaZeus::new` constructor.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Creating a new connection can now be done using the following basic snippet:</span>
 <span class='doccomment'>//!</span>
@@ -132,10 +130,10 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! After having created an instance of DaZeus you can start sending commands using one of the</span>
 <span class='doccomment'>//! methods provided. Alternatively you can send Request objects directly using the</span>
-<span class='doccomment'>//! `DaZeus::send()` method, however this is generally not recommended.</span>
+<span class='doccomment'>//! `DaZeusClient::send()` method, however this is generally not recommended.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! You can register new listeners using the `DaZeus::subscribe()` and</span>
-<span class='doccomment'>//! `DaZeus::subscribeCommand()` methods. You provide these with functions which will be called</span>
+<span class='doccomment'>//! `DaZeus::subscribe_command()` methods. You provide these with functions which will be called</span>
 <span class='doccomment'>//! every time such an event occurs.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! After you have enabled any event subscribers you need to use the `DaZeus::listen()` method,</span>

@@ -45,15 +45,14 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/dazeus/lib.rs.html#1-74' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/dazeus/lib.rs.html#1-73' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>DaZeus IRC bot bindings for <a href="http://www.rust-lang.org/">Rust</a>.</p>
 
 <p>For using these bindings you will need to setup a <a href="https://github.com/dazeus/dazeus-core">dazeus-core</a>
 instance. For users using OSX and Homebrew, a <a href="https://github.com/rnijveld/homebrew-dazeus">tap is available</a>.</p>
 
 <p>The best way to get started is by using the <code>connection_from_str</code> function provided. It allows
-the creation of a <code>Connection</code>, which can be fed directly to the <code>DaZeus::from_conn</code>
-constructor.</p>
+the creation of a <code>Connection</code>, which can be fed directly to the <code>DaZeus::new</code> constructor.</p>
 
 <p>Creating a new connection can now be done using the following basic snippet:</p>
 <pre id='rust-example-rendered' class='rust '>
@@ -62,10 +61,10 @@ constructor.</p>
 
 <p>After having created an instance of DaZeus you can start sending commands using one of the
 methods provided. Alternatively you can send Request objects directly using the
-<code>DaZeus::send()</code> method, however this is generally not recommended.</p>
+<code>DaZeusClient::send()</code> method, however this is generally not recommended.</p>
 
 <p>You can register new listeners using the <code>DaZeus::subscribe()</code> and
-<code>DaZeus::subscribeCommand()</code> methods. You provide these with functions which will be called
+<code>DaZeus::subscribe_command()</code> methods. You provide these with functions which will be called
 every time such an event occurs.</p>
 
 <p>After you have enabled any event subscribers you need to use the <code>DaZeus::listen()</code> method,
@@ -219,6 +218,16 @@ for as long as it can.</p>
                                title='dazeus::PROTOCOL_VERSION'>PROTOCOL_VERSION</a></td>
                         <td class='docblock short'>
                              <p>The version of the DaZeus plugin communication protocol that these bindings understand.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.DaZeusClient.html'
+                               title='dazeus::DaZeusClient'>DaZeusClient</a></td>
+                        <td class='docblock short'>
+                             <p>Methods for interaction with the DaZeus server.</p>
 
                         </td>
                     </tr>

@@ -457,6 +457,137 @@
 <span id="415">415</span>
 <span id="416">416</span>
 <span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>event</span>::{<span class='ident'>Event</span>, <span class='ident'>EventType</span>};
@@ -473,9 +604,9 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See the [crate documentation](./index.html) for a more detailed instruction on how to get</span>
 <span class='doccomment'>/// started with these DaZeus bindings.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>DaZeus</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Read</span> <span class='op'>+</span> <span class='ident'>Write</span> {
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>DaZeus</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>handler</span>: <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Handler</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>listeners</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Listener</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>listeners</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Listener</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>current_handle</span>: <span class='ident'>u64</span>,
 }
 
@@ -489,9 +620,17 @@
         }
     }
 
+    <span class='doccomment'>/// Loop wait for messages to receive in a blocking way.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>loop</span> {
+            <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>try_next_event</span>());
+        }
+    }
+
     <span class='kw'>fn</span> <span class='ident'>next_response</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Response</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>loop</span> {
-            <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>read</span>()) {
+            <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> { <span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>read</span>() };
+            <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>msg</span>) {
                 <span class='ident'>Message</span>::<span class='ident'>Event</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>handle_event</span>(<span class='ident'>e</span>),
                 <span class='ident'>Message</span>::<span class='ident'>Response</span>(<span class='ident'>r</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>r</span>),
             }
@@ -499,7 +638,8 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>try_next_event</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Event</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>read</span>()) {
+        <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> { <span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>read</span>() };
+        <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>msg</span>) {
             <span class='ident'>Message</span>::<span class='ident'>Event</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>handle_event</span>(<span class='ident'>e</span>.<span class='ident'>clone</span>());
                 <span class='prelude-val'>Ok</span>(<span class='ident'>e</span>)
@@ -515,20 +655,6 @@
         }
     }
 
-    <span class='doccomment'>/// Send a request to DaZeus and retrieve a Future in which the response will be contained.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
-        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>try_send</span>(<span class='ident'>request</span>) {
-            <span class='prelude-val'>Ok</span>(<span class='ident'>response</span>) <span class='op'>=&gt;</span> <span class='ident'>response</span>,
-            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
-        }
-    }
-
-    <span class='doccomment'>/// Try to send a request to DaZeus</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>try_send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Response</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>write</span>(<span class='ident'>request</span>));
-        <span class='self'>self</span>.<span class='ident'>next_response</span>()
-    }
-
     <span class='doccomment'>/// Handle an event received by calling all event listeners listening for that event type.</span>
     <span class='kw'>fn</span> <span class='ident'>handle_event</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>Event</span>) {
         <span class='kw'>for</span> <span class='ident'>listener</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>listeners</span>.<span class='ident'>iter</span>() {
@@ -538,16 +664,9 @@
         }
     }
 
-    <span class='doccomment'>/// Loop wait for messages to receive in a blocking way.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='kw'>loop</span> {
-            <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>try_next_event</span>());
-        }
-    }
-
     <span class='doccomment'>/// Subscribe to an event type and call the callback function every time such an event occurs.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>subscribe</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> (<span class='ident'>ListenerHandle</span>, <span class='ident'>Response</span>)
-        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='ident'>Event</span>, <span class='kw-2'>&amp;</span><span class='ident'>DaZeus</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>+</span> <span class='lifetime'>&#39;a</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='ident'>Event</span>, <span class='kw-2'>&amp;</span><span class='ident'>DaZeusClient</span>) <span class='op'>+</span> <span class='lifetime'>&#39;a</span>
     {
         <span class='kw'>let</span> <span class='ident'>request</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>event</span> {
             <span class='ident'>EventType</span>::<span class='ident'>Command</span>(<span class='kw-2'>ref</span> <span class='ident'>cmd</span>) <span class='op'>=&gt;</span> <span class='ident'>Request</span>::<span class='ident'>SubscribeCommand</span>(<span class='ident'>cmd</span>.<span class='ident'>clone</span>(), <span class='prelude-val'>None</span>),
@@ -564,13 +683,155 @@
 
     <span class='doccomment'>/// Subscribe to a command and call the callback function every time such a command occurs.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>subscribe_command</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>command</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>callback</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> (<span class='ident'>ListenerHandle</span>, <span class='ident'>Response</span>)
-        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='ident'>Event</span>, <span class='kw-2'>&amp;</span><span class='ident'>DaZeus</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>+</span> <span class='lifetime'>&#39;a</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='ident'>Event</span>, <span class='kw-2'>&amp;</span><span class='ident'>DaZeusClient</span>) <span class='op'>+</span> <span class='lifetime'>&#39;a</span>
     {
         <span class='self'>self</span>.<span class='ident'>subscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>Command</span>(<span class='ident'>command</span>.<span class='ident'>to_string</span>()), <span class='ident'>callback</span>)
     }
+}
+
+<span class='doccomment'>/// Methods for interaction with the DaZeus server.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>DaZeusClient</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Try to send a request to DaZeus</span>
+    <span class='kw'>fn</span> <span class='ident'>try_send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Response</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
+
+    <span class='doccomment'>/// Send a request to DaZeus and retrieve a Future in which the response will be contained.</span>
+    <span class='kw'>fn</span> <span class='ident'>send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
 
     <span class='doccomment'>/// Unsubscribe a listener for some event.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unsubscribe</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>handle</span>: <span class='ident'>ListenerHandle</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>unsubscribe</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>handle</span>: <span class='ident'>ListenerHandle</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Remove all subscriptions for a specific event type.</span>
+    <span class='kw'>fn</span> <span class='ident'>unsubscribe_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Check if there is any active listener for the given event type.</span>
+    <span class='kw'>fn</span> <span class='ident'>has_any_subscription</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
+
+    <span class='doccomment'>/// Retrieve the networks the bot is connected to.</span>
+    <span class='kw'>fn</span> <span class='ident'>networks</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve the channels the bot is in for a given network.</span>
+    <span class='kw'>fn</span> <span class='ident'>channels</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a message to a specific channel using the PRIVMSG method.</span>
+    <span class='kw'>fn</span> <span class='ident'>message</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a CTCP NOTICE to a specific channel.</span>
+    <span class='kw'>fn</span> <span class='ident'>notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a CTCP REQUEST to a specific channel.</span>
+    <span class='kw'>fn</span> <span class='ident'>ctcp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a CTCP REPLY to a specific channel.</span>
+    <span class='kw'>fn</span> <span class='ident'>ctcp_reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a CTCP ACTION to a specific channel</span>
+    <span class='kw'>fn</span> <span class='ident'>action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a request for the list of nicks in a channel.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that the response will not contain the names data, instead listen for a names event.</span>
+    <span class='doccomment'>/// The Response will only indicate whether or not the request has been submitted successfully.</span>
+    <span class='doccomment'>/// The server may respond with an `EventType::Names` event any time after this request has</span>
+    <span class='doccomment'>/// been submitted.</span>
+    <span class='kw'>fn</span> <span class='ident'>send_names</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a request for a whois of a specific nick on some network.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that the response will not contain the whois data, instead listen for a whois event.</span>
+    <span class='doccomment'>/// The Response will only indicate whether or not the request has been submitted successfully.</span>
+    <span class='doccomment'>/// The server may respond with an `EventType::Whois` event any time after this request has</span>
+    <span class='doccomment'>/// been submitted.</span>
+    <span class='kw'>fn</span> <span class='ident'>send_whois</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Try to join a channel on some network.</span>
+    <span class='kw'>fn</span> <span class='ident'>join</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Try to leave a channel on some network.</span>
+    <span class='kw'>fn</span> <span class='ident'>part</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve the nickname of the bot on the given network.</span>
+    <span class='kw'>fn</span> <span class='ident'>nick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a handshake to the DaZeus core.</span>
+    <span class='kw'>fn</span> <span class='ident'>handshake</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>version</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>config</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve a config value from the DaZeus config.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_config</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>group</span>: <span class='ident'>ConfigGroup</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve the character that is used by the bot for highlighting.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_highlight_char</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve a property stored in the bot database.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Set a property to be stored in the bot database.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Remove a property stored in the bot database.</span>
+    <span class='kw'>fn</span> <span class='ident'>unset_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve a list of keys starting with the common prefix with the given scope.</span>
+    <span class='kw'>fn</span> <span class='ident'>get_property_keys</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>prefix</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Set a permission to either allow or deny for a specific scope.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>allow</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Retrieve whether for some scope the given permission was set.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Will return the default if it was not.</span>
+    <span class='kw'>fn</span> <span class='ident'>has_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>default</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Remove a set permission from the bot.</span>
+    <span class='kw'>fn</span> <span class='ident'>unset_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a whois request and wait for an event that answers this request (blocking).</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that the IRC server may not respond to the whois request (if it has been configured</span>
+    <span class='doccomment'>/// this way), in which case this request will block forever.</span>
+    <span class='kw'>fn</span> <span class='ident'>whois</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span>;
+
+    <span class='doccomment'>/// Send a names request and wait for an event that answers this request (blocking).</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that the IRC server may not respond to the names request (if it has been configured</span>
+    <span class='doccomment'>/// this way), in which case this request will block forever.</span>
+    <span class='kw'>fn</span> <span class='ident'>names</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span>;
+
+    <span class='doccomment'>/// Send a reply in response to some event.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
+    <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
+    <span class='kw'>fn</span> <span class='ident'>reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>highlight</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a reply (as a notice) in response to some event.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
+    <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
+    <span class='kw'>fn</span> <span class='ident'>reply_with_notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+
+    <span class='doccomment'>/// Send a reply (as a ctcp action) in response to some event.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
+    <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
+    <span class='kw'>fn</span> <span class='ident'>reply_with_action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span>;
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>DaZeusClient</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>DaZeus</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Read</span> <span class='op'>+</span> <span class='ident'>Write</span> {
+    <span class='doccomment'>/// Try to send a request to DaZeus</span>
+    <span class='kw'>fn</span> <span class='ident'>try_send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Response</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        { <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handler</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>write</span>(<span class='ident'>request</span>)) };
+        <span class='self'>self</span>.<span class='ident'>next_response</span>()
+    }
+
+    <span class='doccomment'>/// Send a request to DaZeus and retrieve a Future in which the response will be contained.</span>
+    <span class='kw'>fn</span> <span class='ident'>send</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>request</span>: <span class='ident'>Request</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>try_send</span>(<span class='ident'>request</span>) {
+            <span class='prelude-val'>Ok</span>(<span class='ident'>response</span>) <span class='op'>=&gt;</span> <span class='ident'>response</span>,
+            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
+        }
+    }
+
+    <span class='doccomment'>/// Unsubscribe a listener for some event.</span>
+    <span class='kw'>fn</span> <span class='ident'>unsubscribe</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>handle</span>: <span class='ident'>ListenerHandle</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='comment'>// first find the event type</span>
         <span class='kw'>let</span> <span class='ident'>event</span> <span class='op'>=</span> {
             <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>listeners</span>.<span class='ident'>iter</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>ref</span> <span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>has_handle</span>(<span class='ident'>handle</span>)) {
@@ -595,7 +856,7 @@
     }
 
     <span class='doccomment'>/// Remove all subscriptions for a specific event type.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unsubscribe_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>unsubscribe_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>listeners</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>ref</span> <span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>event</span> <span class='op'>!=</span> <span class='ident'>event</span>);
         <span class='kw'>match</span> <span class='ident'>event</span> {
             <span class='ident'>EventType</span>::<span class='ident'>Command</span>(_) <span class='op'>=&gt;</span> <span class='ident'>Response</span>::<span class='ident'>for_success</span>(),
@@ -604,22 +865,22 @@
     }
 
     <span class='doccomment'>/// Check if there is any active listener for the given event type.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>has_any_subscription</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>fn</span> <span class='ident'>has_any_subscription</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='ident'>EventType</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>listeners</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>ref</span> <span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>event</span> <span class='op'>==</span> <span class='ident'>event</span>)
     }
 
     <span class='doccomment'>/// Retrieve the networks the bot is connected to.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>networks</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>networks</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Networks</span>)
     }
 
     <span class='doccomment'>/// Retrieve the channels the bot is in for a given network.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>channels</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>channels</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Channels</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Send a message to a specific channel using the PRIVMSG method.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>message</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>message</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Message</span>(
             <span class='ident'>network</span>.<span class='ident'>to_string</span>(),
             <span class='ident'>channel</span>.<span class='ident'>to_string</span>(),
@@ -628,7 +889,7 @@
     }
 
     <span class='doccomment'>/// Send a CTCP NOTICE to a specific channel.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Notice</span>(
             <span class='ident'>network</span>.<span class='ident'>to_string</span>(),
             <span class='ident'>channel</span>.<span class='ident'>to_string</span>(),
@@ -637,7 +898,7 @@
     }
 
     <span class='doccomment'>/// Send a CTCP REQUEST to a specific channel.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ctcp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>ctcp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Ctcp</span>(
             <span class='ident'>network</span>.<span class='ident'>to_string</span>(),
             <span class='ident'>channel</span>.<span class='ident'>to_string</span>(),
@@ -646,7 +907,7 @@
     }
 
     <span class='doccomment'>/// Send a CTCP REPLY to a specific channel.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ctcp_reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>ctcp_reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>CtcpReply</span>(
             <span class='ident'>network</span>.<span class='ident'>to_string</span>(),
             <span class='ident'>channel</span>.<span class='ident'>to_string</span>(),
@@ -655,7 +916,7 @@
     }
 
     <span class='doccomment'>/// Send a CTCP ACTION to a specific channel</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Action</span>(
             <span class='ident'>network</span>.<span class='ident'>to_string</span>(),
             <span class='ident'>channel</span>.<span class='ident'>to_string</span>(),
@@ -669,7 +930,7 @@
     <span class='doccomment'>/// The Response will only indicate whether or not the request has been submitted successfully.</span>
     <span class='doccomment'>/// The server may respond with an `EventType::Names` event any time after this request has</span>
     <span class='doccomment'>/// been submitted.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send_names</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>send_names</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Names</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>(), <span class='ident'>channel</span>.<span class='ident'>to_string</span>()))
     }
 
@@ -679,27 +940,27 @@
     <span class='doccomment'>/// The Response will only indicate whether or not the request has been submitted successfully.</span>
     <span class='doccomment'>/// The server may respond with an `EventType::Whois` event any time after this request has</span>
     <span class='doccomment'>/// been submitted.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send_whois</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>send_whois</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Whois</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>(), <span class='ident'>nick</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Try to join a channel on some network.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>join</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>join</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Join</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>(), <span class='ident'>channel</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Try to leave a channel on some network.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>part</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>part</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Part</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>(), <span class='ident'>channel</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Retrieve the nickname of the bot on the given network.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>nick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>nick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Nick</span>(<span class='ident'>network</span>.<span class='ident'>to_string</span>()))
     }
 
     <span class='doccomment'>/// Send a handshake to the DaZeus core.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>handshake</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>version</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>config</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>handshake</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>version</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>config</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>name</span>.<span class='ident'>to_string</span>();
         <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>version</span>.<span class='ident'>to_string</span>();
         <span class='kw'>let</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>config</span> {
@@ -710,49 +971,49 @@
     }
 
     <span class='doccomment'>/// Retrieve a config value from the DaZeus config.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_config</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>group</span>: <span class='ident'>ConfigGroup</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>get_config</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>group</span>: <span class='ident'>ConfigGroup</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Config</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='ident'>group</span>))
     }
 
     <span class='doccomment'>/// Retrieve the character that is used by the bot for highlighting.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_highlight_char</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>get_highlight_char</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>get_config</span>(<span class='string'>&quot;highlight&quot;</span>, <span class='ident'>ConfigGroup</span>::<span class='ident'>Core</span>)
     }
 
     <span class='doccomment'>/// Retrieve a property stored in the bot database.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>get_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>GetProperty</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Set a property to be stored in the bot database.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>set_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>SetProperty</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='ident'>value</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Remove a property stored in the bot database.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unset_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>unset_property</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>UnsetProperty</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Retrieve a list of keys starting with the common prefix with the given scope.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_property_keys</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>prefix</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>get_property_keys</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>prefix</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>PropertyKeys</span>(<span class='ident'>prefix</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Set a permission to either allow or deny for a specific scope.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>allow</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>set_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>allow</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>SetPermission</span>(<span class='ident'>permission</span>.<span class='ident'>to_string</span>(), <span class='ident'>allow</span>, <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Retrieve whether for some scope the given permission was set.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Will return the default if it was not.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>has_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>default</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>has_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>default</span>: <span class='ident'>bool</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>HasPermission</span>(<span class='ident'>permission</span>.<span class='ident'>to_string</span>(), <span class='ident'>default</span>, <span class='ident'>scope</span>))
     }
 
     <span class='doccomment'>/// Remove a set permission from the bot.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unset_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>unset_permission</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>permission</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scope</span>: <span class='ident'>Scope</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>UnsetPermission</span>(<span class='ident'>permission</span>.<span class='ident'>to_string</span>(), <span class='ident'>scope</span>))
     }
 
@@ -760,7 +1021,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note that the IRC server may not respond to the whois request (if it has been configured</span>
     <span class='doccomment'>/// this way), in which case this request will block forever.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>whois</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span> {
+    <span class='kw'>fn</span> <span class='ident'>whois</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>nick</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>has_any_subscription</span>(<span class='ident'>EventType</span>::<span class='ident'>Whois</span>) {
             <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Subscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>Whois</span>));
         }
@@ -784,7 +1045,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note that the IRC server may not respond to the names request (if it has been configured</span>
     <span class='doccomment'>/// this way), in which case this request will block forever.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>names</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span> {
+    <span class='kw'>fn</span> <span class='ident'>names</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>network</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>channel</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Event</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>has_any_subscription</span>(<span class='ident'>EventType</span>::<span class='ident'>Names</span>) {
             <span class='self'>self</span>.<span class='ident'>send</span>(<span class='ident'>Request</span>::<span class='ident'>Subscribe</span>(<span class='ident'>EventType</span>::<span class='ident'>Names</span>));
         }
@@ -808,7 +1069,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
     <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>highlight</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>reply</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>highlight</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>network</span>, <span class='ident'>channel</span>, <span class='ident'>user</span>)) <span class='op'>=</span> <span class='ident'>targets_for_event</span>(<span class='ident'>event</span>) {
             <span class='kw'>let</span> <span class='ident'>resp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>nick</span>(<span class='ident'>network</span>);
             <span class='kw'>let</span> <span class='ident'>nick</span> <span class='op'>=</span> <span class='ident'>resp</span>.<span class='ident'>get_str_or</span>(<span class='string'>&quot;nick&quot;</span>, <span class='string'>&quot;&quot;</span>);
@@ -831,7 +1092,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
     <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reply_with_notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>reply_with_notice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>network</span>, <span class='ident'>channel</span>, <span class='ident'>user</span>)) <span class='op'>=</span> <span class='ident'>targets_for_event</span>(<span class='ident'>event</span>) {
             <span class='kw'>let</span> <span class='ident'>resp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>nick</span>(<span class='ident'>network</span>);
             <span class='kw'>let</span> <span class='ident'>nick</span> <span class='op'>=</span> <span class='ident'>resp</span>.<span class='ident'>get_str_or</span>(<span class='string'>&quot;nick&quot;</span>, <span class='string'>&quot;&quot;</span>);
@@ -849,7 +1110,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Note that not all types of events can be responded to. Mostly message type events</span>
     <span class='doccomment'>/// concerning some IRC user can be responded to. Join events can also be responded to.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reply_with_action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
+    <span class='kw'>fn</span> <span class='ident'>reply_with_action</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Response</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>network</span>, <span class='ident'>channel</span>, <span class='ident'>user</span>)) <span class='op'>=</span> <span class='ident'>targets_for_event</span>(<span class='ident'>event</span>) {
             <span class='kw'>let</span> <span class='ident'>resp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>nick</span>(<span class='ident'>network</span>);
             <span class='kw'>let</span> <span class='ident'>nick</span> <span class='op'>=</span> <span class='ident'>resp</span>.<span class='ident'>get_str_or</span>(<span class='string'>&quot;nick&quot;</span>, <span class='string'>&quot;&quot;</span>);
@@ -871,6 +1132,7 @@
         <span class='op'>|</span> <span class='ident'>EventType</span>::<span class='ident'>PrivMsg</span>
         <span class='op'>|</span> <span class='ident'>EventType</span>::<span class='ident'>Notice</span>
         <span class='op'>|</span> <span class='ident'>EventType</span>::<span class='ident'>Ctcp</span>
+        <span class='op'>|</span> <span class='ident'>EventType</span>::<span class='ident'>Command</span>(_)
         <span class='op'>|</span> <span class='ident'>EventType</span>::<span class='ident'>Action</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>((<span class='kw-2'>&amp;</span><span class='ident'>params</span>[<span class='number'>0</span>][..], <span class='kw-2'>&amp;</span><span class='ident'>params</span>[<span class='number'>2</span>][..], <span class='kw-2'>&amp;</span><span class='ident'>params</span>[<span class='number'>1</span>][..])),
         _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
     }

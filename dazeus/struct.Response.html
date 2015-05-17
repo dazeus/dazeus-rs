@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-7856' class='srclink' href='../src/dazeus/response.rs.html#7-9' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-8574' class='srclink' href='../src/dazeus/response.rs.html#7-9' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Response {
     // some fields omitted
 }</pre><div class='docblock'><p>The response from a command send to the DaZeus server.</p>
@@ -76,6 +76,8 @@ DaZeus core instance.</p>
 property doesn&#39;t exist, or if it isn&#39;t of type <code>Json::String</code>.</p>
 </div><h4 id='method.get_str_or' class='method'><code>fn <a href='#method.get_str_or' class='fnname'>get_str_or</a>&lt;'a&gt;(&amp;'a self, prop: &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, default: &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <div class='docblock'><p>Retrieve a string from the data object, or return a default if no such string can be found.</p>
+</div><h4 id='method.has' class='method'><code>fn <a href='#method.has' class='fnname'>has</a>(&amp;self, prop: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns whether or not a property with the given name exists.</p>
 </div><h4 id='method.has_success' class='method'><code>fn <a href='#method.has_success' class='fnname'>has_success</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Check whether a Response contains a <code>success</code> property and whether it was true.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../dazeus/struct.Response.html' title='dazeus::Response'>Response</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='struct' href='../dazeus/struct.Response.html' title='dazeus::Response'>Response</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>

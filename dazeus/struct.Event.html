@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-2921' class='srclink' href='../src/dazeus/event.rs.html#154-159' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-3377' class='srclink' href='../src/dazeus/event.rs.html#154-159' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Event {
     pub event: <a class='enum' href='../dazeus/enum.EventType.html' title='dazeus::EventType'>EventType</a>,
     pub params: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
@@ -87,6 +87,8 @@ events based on parsed Json objects.</p>
 from some received json blob from the core.</p>
 </div><h4 id='method.param' class='method'><code>fn <a href='#method.param' class='fnname'>param</a>&lt;'a&gt;(&amp;'a self, idx: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <div class='docblock'><p>Retrieve a parameter from the list of parameters contained in the event.</p>
+</div><h4 id='method.len' class='method'><code>fn <a href='#method.len' class='fnname'>len</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+<div class='docblock'><p>Retrieve the number of parameters for the event.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'b&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Index.html' title='core::ops::Index'>Index</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt; for <a class='struct' href='../dazeus/struct.Event.html' title='dazeus::Event'>Event</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <h4 id='method.index' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Index.html#method.index' class='fnname'>index</a>&lt;'a&gt;(&amp;'a self, index: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 </div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../dazeus/struct.Event.html' title='dazeus::Event'>Event</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='struct' href='../dazeus/struct.Event.html' title='dazeus::Event'>Event</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
