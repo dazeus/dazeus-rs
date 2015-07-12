@@ -49,7 +49,7 @@ impl<T> Handler<T> where T: Read + Write {
 
         while offset < self.buffer.len() {
             // check for a number
-            if self.buffer[offset] < 0x40 && self.buffer[offset] >= 0x30 {
+            if self.buffer[offset] < 0x3A && self.buffer[offset] >= 0x30 {
                 message_len *= 10;
                 message_len += (self.buffer[offset] - 0x30) as usize;
                 offset += 1;
