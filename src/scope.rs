@@ -67,18 +67,23 @@ impl Scope {
 impl ToJson for Scope {
     fn to_json(&self) -> Json {
         let mut arr = Array::new();
-        arr.push(match self.network {
-            None => Json::Null,
-            Some(ref s) => Json::String(s.clone()),
-        });
-        arr.push(match self.sender {
-            None => Json::Null,
-            Some(ref s) => Json::String(s.clone()),
-        });
-        arr.push(match self.receiver {
-            None => Json::Null,
-            Some(ref s) => Json::String(s.clone()),
-        });
+        if self.network.is_some() || self.sender.is_some() || self.receiver.is_some() {
+            arr.push(match self.network {
+                None => Json::Null,
+                Some(ref s) => Json::String(s.clone()),
+            });
+
+            if self.sender.is_some() || self.receiver.is_some() {
+                arr.push(match self.sender {
+                    None => Json::Null,
+                    Some(ref s) => Json::String(s.clone()),
+                });
+
+                if let Some(ref s) = self.receiver {
+                    arr.push(Json::String(s.clone()));
+                }
+            }
+        }
         Json::Array(arr)
     }
 }
