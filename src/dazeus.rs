@@ -8,6 +8,10 @@ use super::scope::Scope;
 use super::error::{ReceiveError, Error};
 use std::cell::RefCell;
 
+struct ResponseQueue {
+    pub responses: Vec<Response>,
+    pub expecting: u64
+}
 
 /// The base DaZeus struct.
 ///
@@ -17,6 +21,7 @@ pub struct DaZeus<'a, T> {
     handler: RefCell<Handler<T>>,
     listeners: Vec<Listener<'a>>,
     current_handle: u64,
+    queue: RefCell<ResponseQueue>
 }
 
 impl<'a, T> DaZeus<'a, T> where T: Read + Write {
@@ -25,7 +30,11 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         DaZeus {
             handler: RefCell::new(Handler::new(conn)),
             listeners: Vec::new(),
-            current_handle: 1
+            current_handle: 1,
+            queue: RefCell::new(ResponseQueue {
+                responses: Vec::new(),
+                expecting: 0,
+            }),
         }
     }
 
@@ -37,11 +46,28 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     fn next_response(&self) -> Result<Response, Error> {
+        { self.queue.borrow_mut().expecting += 1; }
         loop {
+            {
+                let mut queue = self.queue.borrow_mut();
+                if queue.responses.len() > 0 && queue.expecting == 0 {
+                    return Ok(queue.responses.pop().unwrap());
+                }
+            }
+
             let msg = { self.handler.borrow_mut().read() };
             match try!(msg) {
                 Message::Event(e) => self.handle_event(e),
-                Message::Response(r) => return Ok(r),
+                Message::Response(r) => {
+                    let mut queue = self.queue.borrow_mut();
+                    queue.expecting -= 1;
+
+                    if queue.expecting == 0 {
+                        return Ok(r);
+                    } else {
+                        queue.responses.push(r);
+                    }
+                },
             }
         }
     }
