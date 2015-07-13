@@ -185,7 +185,7 @@ pub trait DaZeusClient<'a> {
     fn part(&self, network: &str, channel: &str) -> Response;
 
     /// Retrieve the nickname of the bot on the given network.
-    fn nick(&self, network: &str) -> Response;
+    fn nick(&self, network: &str) -> Option<String>;
 
     /// Send a handshake to the DaZeus core.
     fn handshake(&self, name: &str, version: &str, config: Option<&str>) -> Response;
@@ -194,7 +194,7 @@ pub trait DaZeusClient<'a> {
     fn get_config(&self, name: &str, group: ConfigGroup) -> Response;
 
     /// Retrieve the character that is used by the bot for highlighting.
-    fn get_highlight_char(&self) -> Response;
+    fn get_highlight_char(&self) -> Option<String>;
 
     /// Retrieve a property stored in the bot database.
     fn get_property(&self, name: &str, scope: Scope) -> Response;
@@ -390,8 +390,12 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Retrieve the nickname of the bot on the given network.
-    fn nick(&self, network: &str) -> Response {
-        self.send(Request::Nick(network.to_string()))
+    fn nick(&self, network: &str) -> Option<String> {
+        let resp = self.send(Request::Nick(network.to_string()));
+        match resp.get_str("nick") {
+            Some(s) => Some(s.to_string()),
+            None => None,
+        }
     }
 
     /// Send a handshake to the DaZeus core.
@@ -411,8 +415,12 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     }
 
     /// Retrieve the character that is used by the bot for highlighting.
-    fn get_highlight_char(&self) -> Response {
-        self.get_config("highlight", ConfigGroup::Core)
+    fn get_highlight_char(&self) -> Option<String> {
+        let resp = self.get_config("highlight", ConfigGroup::Core);
+        match resp.get_str("value") {
+            Some(s) => Some(s.to_string()),
+            None => None,
+        }
     }
 
     /// Retrieve a property stored in the bot database.
@@ -506,8 +514,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let resp = self.nick(network);
-            let nick = resp.get_str_or("nick", "");
+            let nick = self.nick(network).unwrap_or("".to_string());
             if channel == nick {
                 self.message(network, user, message)
             } else {
@@ -529,8 +536,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let resp = self.nick(network);
-            let nick = resp.get_str_or("nick", "");
+            let nick = self.nick(network).unwrap_or("".to_string());
             if channel == nick {
                 self.notice(network, user, message)
             } else {
@@ -547,8 +553,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_action(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let resp = self.nick(network);
-            let nick = resp.get_str_or("nick", "");
+            let nick = self.nick(network).unwrap_or("".to_string());
             if channel == nick {
                 self.action(network, user, message)
             } else {
