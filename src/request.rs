@@ -387,8 +387,8 @@ impl ToJson for Request {
                 push_str!(name);
             },
             Request::Config(ref key, ref ctype) => {
-                push_str!(key);
                 push_str!(ctype.to_string());
+                push_str!(key);
             },
             Request::GetProperty(ref property, ref scope) => {
                 push_str!("get".to_string());
