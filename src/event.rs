@@ -169,13 +169,14 @@ impl Event {
     /// events based on parsed Json objects.
     ///
     /// # Example
-    /// ```
-    /// Event::new(EventType::PrivMsg, vec!(
+    /// ```rust
+    /// # use dazeus::{Event,EventType};
+    /// let event = Event::new(EventType::PrivMsg, vec!(
     ///    "network".to_string(),
     ///    "sender".to_string(),
     ///    "receiver".to_string(),
     ///    "message".to_string()
-    /// ))
+    /// ));
     /// ```
     pub fn new(event: EventType, params: Vec<String>) -> Event {
         Event { event: event, params: params }

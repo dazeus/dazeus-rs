@@ -69,7 +69,8 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Subscribe(EventType::PrivMsg)
+    /// # use dazeus::*;
+    /// Request::Subscribe(EventType::PrivMsg);
     /// ```
     Subscribe(EventType),
     /// Unsubscribe from an event.
@@ -80,7 +81,8 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Unsubscribe(EventType::Join)
+    /// # use dazeus::*;
+    /// Request::Unsubscribe(EventType::Join);
     /// ```
     Unsubscribe(EventType),
     /// Subscribe to a command (optionally on a specific network).
@@ -92,21 +94,24 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::SubscribeCommand("greet".to_string(), Some("freenode".to_string()))
+    /// # use dazeus::*;
+    /// Request::SubscribeCommand("greet".to_string(), Some("freenode".to_string()));
     /// ```
     SubscribeCommand(Command, Option<Network>),
     /// Retrieve a list of networks that the DaZeus core is currently connected to.
     ///
     /// # Example
     /// ```
-    /// Request::Networks
+    /// # use dazeus::Request;
+    /// Request::Networks;
     /// ```
     Networks,
     /// Retrieve a list of channels on the specified network that the bot has joined.
     ///
     /// # Example
     /// ```
-    /// Request::Channels("freenode".to_string())
+    /// # use dazeus::Request;
+    /// Request::Channels("freenode".to_string());
     /// ```
     Channels(Network),
     /// Request to send a message to a specific target on some network.
@@ -115,7 +120,10 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Message("freenode".to_string(), "#botters-test".to_string(), "Hello!".to_string())
+    /// # use dazeus::Request;
+    /// Request::Message("freenode".to_string(),
+    ///                  "#botters-test".to_string(),
+    ///                  "Hello!".to_string());
     /// ```
     Message(Network, Target, Message),
     /// Request to send a notice to some target on some network.
@@ -124,21 +132,24 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Notice("example".to_string(), "MrExample".to_string(), "Message!".to_string())
+    /// # use dazeus::Request;
+    /// Request::Notice("example".to_string(), "MrExample".to_string(), "Message!".to_string());
     /// ```
     Notice(Network, Target, Message),
     /// Request to send a CTCP message to some client on some network.
     ///
     /// # Example
     /// ```
-    /// Request::Ctcp("example".to_string(), "MrExample".to_string(), "VERSION".to_string())
+    /// # use dazeus::Request;
+    /// Request::Ctcp("example".to_string(), "MrExample".to_string(), "VERSION".to_string());
     /// ```
     Ctcp(Network, Target, Message),
     /// Request to send a CTCP message reply to some client on some network.
     ///
     /// # Example
     /// ```
-    /// Request::CtcpReply("example".to_string(), "MrExample".to_string(), "VERSION DaZeus 2.0".to_string())
+    /// # use dazeus::Request;
+    /// Request::CtcpReply("example".to_string(), "MrExample".to_string(), "VERSION DaZeus 2.0".to_string());
     /// ```
     CtcpReply(Network, Target, Message),
     /// Request to send a CTCP ACTION message to some target on some network.
@@ -147,7 +158,8 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Action("example".to_string(), "#example", "is creating an example".to_string())
+    /// # use dazeus::Request;
+    /// Request::Action("example".to_string(), "#example".to_string(), "is creating an example".to_string());
     /// ```
     Action(Network, Target, Message),
     /// Request to send the list of names in some channel.
@@ -157,7 +169,8 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Names("freenode".to_string(), "#freenode".to_string())
+    /// # use dazeus::Request;
+    /// Request::Names("freenode".to_string(), "#freenode".to_string());
     /// ```
     Names(Network, Target),
     /// Request to send a whois on some target.
@@ -167,28 +180,32 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Whois("example".to_string(), "MrExample".to_string())
+    /// # use dazeus::Request;
+    /// Request::Whois("example".to_string(), "MrExample".to_string());
     /// ```
     Whois(Network, Target),
     /// Request to join a channel on some network.
     ///
     /// # Example
     /// ```
-    /// Request::Join("freenode".to_string(), "#freenode".to_string())
+    /// # use dazeus::Request;
+    /// Request::Join("freenode".to_string(), "#freenode".to_string());
     /// ```
     Join(Network, Target),
     /// Request to leave a channel on some network.
     ///
     /// # Example
     /// ```
-    /// Request::Part("freenode".to_string(), "#freenode".to_string())
+    /// # use dazeus::Request;
+    /// Request::Part("freenode".to_string(), "#freenode".to_string());
     /// ```
     Part(Network, Target),
     /// Request the nickname of the bot on a network.
     ///
     /// # Example
     /// ```
-    /// Request::Nick("freenode".to_string())
+    /// # use dazeus::Request;
+    /// Request::Nick("freenode".to_string());
     /// ```
     Nick(Network),
     /// Request for a handshake to the DaZeus Core.
@@ -203,7 +220,8 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Handshake("my_plugin".to_string(), PROTOCOL_VERSION.to_string(), None)
+    /// # use dazeus::*;
+    /// Request::Handshake("my_plugin".to_string(), PROTOCOL_VERSION.to_string(), None);
     /// ```
     Handshake(PluginName, PluginVersion, Option<String>),
     /// Retrieve some option from the DaZeus core config.
@@ -216,28 +234,32 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::Config("highlight".to_string(), ConfigGroup::Core)
+    /// # use dazeus::*;
+    /// Request::Config("highlight".to_string(), ConfigGroup::Core);
     /// ```
     Config(String, ConfigGroup),
     /// Retrieve a property from the internal DaZeus core database.
     ///
     /// # Example
     /// ```
-    /// Request::GetProperty("example".to_string(), Scope::any())
+    /// # use dazeus::*;
+    /// Request::GetProperty("example".to_string(), Scope::any());
     /// ```
     GetProperty(String, Scope),
     /// Set a property in the internal DaZeus core database.
     ///
     /// # Example
     /// ```
-    /// Request::SetProperty("example".to_string(), "value".to_string(), Scope::any())
+    /// # use dazeus::*;
+    /// Request::SetProperty("example".to_string(), "value".to_string(), Scope::any());
     /// ```
     SetProperty(String, String, Scope),
     /// Remove a property from the internal DaZeus core database.
     ///
     /// # Example
     /// ```
-    /// Request::UnsetProperty("example".to_string(), Scope::any())
+    /// # use dazeus::*;
+    /// Request::UnsetProperty("example".to_string(), Scope::any());
     /// ```
     UnsetProperty(String, Scope),
     /// Retrieve a set of keys that is available for some prefix and scope.
@@ -246,14 +268,16 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::PropertyKeys("path.to".to_string(), Scope::network("example"))
+    /// # use dazeus::*;
+    /// Request::PropertyKeys("path.to".to_string(), Scope::network("example"));
     /// ```
     PropertyKeys(String, Scope),
     /// Set a permission in the permission database of the DaZeus core.
     ///
     /// # Example
     /// ```
-    /// Request::SetPermission("edit".to_string(), true, Scope::sender("example", "MrExample"))
+    /// # use dazeus::*;
+    /// Request::SetPermission("edit".to_string(), true, Scope::sender("example", "MrExample"));
     /// ```
     SetPermission(String, bool, Scope),
     /// Request a permission to be retrieved from the permission database of the DaZeus core.
@@ -263,14 +287,16 @@ pub enum Request {
     ///
     /// # Example
     /// ```
-    /// Request::HasPermission("edit".to_string(), false, Scope::sender("example", "MrExample"))
+    /// # use dazeus::*;
+    /// Request::HasPermission("edit".to_string(), false, Scope::sender("example", "MrExample"));
     /// ```
     HasPermission(String, bool, Scope),
     /// Remove a permission from the permission database of the DaZeus core.
     ///
     /// # Example
     /// ```
-    /// Request::UnsetPermission("edit".to_string(), Scope::sender("example", "MrExample"))
+    /// # use dazeus::*;
+    /// Request::UnsetPermission("edit".to_string(), Scope::sender("example", "MrExample"));
     /// ```
     UnsetPermission(String, Scope),
 }
