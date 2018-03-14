@@ -2,7 +2,6 @@ use std::str::FromStr;
 use serialize::json::Json;
 use super::error::{ParseEventTypeError, InvalidJsonError};
 use std::ops::Index;
-use std::ascii::AsciiExt;
 
 /// The events that could possibly be received from the DaZeus server.
 ///

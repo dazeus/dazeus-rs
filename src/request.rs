@@ -4,7 +4,6 @@ use super::event::EventType;
 use std::string::ToString;
 use std::str::FromStr;
 use super::error::ParseConfigGroupError;
-use std::ascii::AsciiExt;
 
 /// The version of the DaZeus plugin communication protocol that these bindings understand.
 pub const PROTOCOL_VERSION: &'static str = "1";
