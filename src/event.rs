@@ -2,7 +2,6 @@ use std::str::FromStr;
 use serialize::json::Json;
 use super::error::{ParseEventTypeError, InvalidJsonError};
 use std::ops::Index;
-use std::ascii::AsciiExt;
 
 /// The events that could possibly be received from the DaZeus server.
 ///
@@ -170,13 +169,14 @@ impl Event {
     /// events based on parsed Json objects.
     ///
     /// # Example
-    /// ```
-    /// Event::new(EventType::PrivMsg, vec!(
+    /// ```rust
+    /// # use dazeus::{Event,EventType};
+    /// let event = Event::new(EventType::PrivMsg, vec!(
     ///    "network".to_string(),
     ///    "sender".to_string(),
     ///    "receiver".to_string(),
     ///    "message".to_string()
-    /// ))
+    /// ));
     /// ```
     pub fn new(event: EventType, params: Vec<String>) -> Event {
         Event { event: event, params: params }

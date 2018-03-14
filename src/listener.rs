@@ -35,7 +35,7 @@ impl<'a> Listener<'a> {
 
     pub fn call<T: Read + Write>(&self, event: Event, dazeus: &DaZeus<T>) {
         let mut fbox = self.callback.borrow_mut();
-        let mut func = fbox.deref_mut();
+        let func = fbox.deref_mut();
         func(event, dazeus as &DaZeusClient);
     }
 

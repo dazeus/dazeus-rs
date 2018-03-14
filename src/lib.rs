@@ -8,7 +8,9 @@
 //!
 //! Creating a new connection can now be done using the following basic snippet:
 //!
-//! ```
+//! ```no_run
+//! use dazeus::{Connection,DaZeus};
+//! let socket = "unix:/tmp/dazeus.sock";
 //! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! ```
 //!
@@ -28,9 +30,10 @@
 //! same reply, only prepending the user that sent the message, so that a highlight is created in
 //! IRC clients configured as such.
 //!
-//! ```
+//! ```no_run
+//! # use dazeus::*;
 //! let socket = "unix:/tmp/dazeus.sock";
-//! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
+//! let mut dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.subscribe(EventType::PrivMsg, |evt, dazeus| {
 //!     dazeus.reply(&evt, &evt[3], true);
 //! });
@@ -42,7 +45,8 @@
 //! this is just a short-run command, in contrast to the previous example that will keep running
 //! for as long as it can.
 //!
-//! ```
+//! ```no_run
+//! # use dazeus::*;
 //! let socket = "unix:/tmp/dazeus.sock";
 //! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.join("local", "#test");
