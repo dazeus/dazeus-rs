@@ -35,9 +35,9 @@ impl Connection {
     pub fn from_str(connection_str: &str) -> Result<Connection> {
         let splits = connection_str.splitn(2, ':').collect::<Vec<_>>();
         if splits.len() == 2 && splits[0] == "unix" {
-            Ok(Connection::Unix(try!(UnixStream::connect(splits[1]))))
+            Ok(Connection::Unix(UnixStream::connect(splits[1])?))
         } else if splits.len() == 2 && splits[0] == "tcp" {
-            Ok(Connection::Tcp(try!(TcpStream::connect(splits[1]))))
+            Ok(Connection::Tcp(TcpStream::connect(splits[1])?))
         } else {
             Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type"))
         }

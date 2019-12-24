@@ -41,7 +41,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// Loop wait for messages to receive in a blocking way.
     pub fn listen(&self) -> Result<(), Error> {
         loop {
-            try!(self.try_next_event());
+            self.try_next_event()?;
         }
     }
 
@@ -50,13 +50,13 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
         loop {
             {
                 let mut queue = self.queue.borrow_mut();
-                if queue.responses.len() > 0 && queue.expecting == 0 {
+                if !queue.responses.is_empty() && queue.expecting == 0 {
                     return Ok(queue.responses.pop().unwrap());
                 }
             }
 
             let msg = { self.handler.borrow_mut().read() };
-            match try!(msg) {
+            match msg? {
                 Message::Event(e) => self.handle_event(e),
                 Message::Response(r) => {
                     let mut queue = self.queue.borrow_mut();
@@ -74,7 +74,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     fn try_next_event(&self) -> Result<Event, Error> {
         let msg = { self.handler.borrow_mut().read() };
-        match try!(msg) {
+        match msg? {
             Message::Event(e) => {
                 self.handle_event(e.clone());
                 Ok(e)
@@ -101,7 +101,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to an event type and call the callback function every time such an event occurs.
     pub fn subscribe<F>(&mut self, event: EventType, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeusClient) + 'a
+        where F: FnMut(Event, &dyn DaZeusClient) + 'a
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
@@ -118,7 +118,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to a command and call the callback function every time such a command occurs.
     pub fn subscribe_command<F>(&mut self, command: &str, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeusClient) + 'a
+        where F: FnMut(Event, &dyn DaZeusClient) + 'a
     {
         self.subscribe(EventType::Command(command.to_string()), callback)
     }
@@ -253,7 +253,7 @@ pub trait DaZeusClient<'a> {
 impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// Try to send a request to DaZeus
     fn try_send(&self, request: Request) -> Result<Response, Error> {
-        { try!(self.handler.borrow_mut().write(request)) };
+        { self.handler.borrow_mut().write(request)? };
         self.next_response()
     }
 
@@ -269,19 +269,19 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     fn unsubscribe(&mut self, handle: ListenerHandle) -> Response {
         // first find the event type
         let event = {
-            match self.listeners.iter().find(|&ref l| l.has_handle(handle)) {
+            match self.listeners.iter().find(|l| l.has_handle(handle)) {
                 Some(listener) => Some(listener.event.clone()),
                 None => None,
             }
         };
 
-        self.listeners.retain(|&ref l| !l.has_handle(handle));
+        self.listeners.retain(|l| !l.has_handle(handle));
         match event {
             // we can't unsubscribe commands
             Some(EventType::Command(_)) => Response::for_success(),
 
             // unsubscribe if there are no more listeners for the event
-            Some(evt) => match self.listeners.iter().any(|&ref l| l.event == evt) {
+            Some(evt) => match self.listeners.iter().any(|l| l.event == evt) {
                 false => self.send(Request::Unsubscribe(evt)),
                 true => Response::for_success(),
             },
@@ -292,7 +292,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Remove all subscriptions for a specific event type.
     fn unsubscribe_all(&mut self, event: EventType) -> Response {
-        self.listeners.retain(|&ref l| l.event != event);
+        self.listeners.retain(|l| l.event != event);
         match event {
             EventType::Command(_) => Response::for_success(),
             _ => self.send(Request::Unsubscribe(event)),
@@ -301,7 +301,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Check if there is any active listener for the given event type.
     fn has_any_subscription(&self, event: EventType) -> bool {
-        self.listeners.iter().any(|&ref l| l.event == event)
+        self.listeners.iter().any(|l| l.event == event)
     }
 
     /// Retrieve the networks the bot is connected to.
@@ -517,14 +517,12 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
             let nick = self.nick(network).unwrap_or("".to_string());
             if channel == nick {
                 self.message(network, user, message)
-            } else {
-                if highlight {
-                    let msg = format!("{}: {}", user, message);
-                    self.message(network, channel, &msg[..])
-                } else {
-                    self.message(network, channel, message)
-                }
-            }
+            } else if highlight {
+    let msg = format!("{}: {}", user, message);
+    self.message(network, channel, &msg[..])
+} else {
+    self.message(network, channel, message)
+}
         } else {
             Response::for_fail("Not an event to reply to")
         }

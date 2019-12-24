@@ -11,7 +11,7 @@ pub type ListenerHandle = u64;
 pub struct Listener<'a> {
     pub event: EventType,
     pub handle: ListenerHandle,
-    callback: RefCell<Box<FnMut(Event, &DaZeusClient) + 'a>>,
+    callback: RefCell<Box<dyn FnMut(Event, &dyn DaZeusClient) + 'a>>,
 }
 
 impl<'a> PartialEq for Listener<'a>{
@@ -28,15 +28,15 @@ impl<'a> Debug for Listener<'a> {
 
 impl<'a> Listener<'a> {
     pub fn new<F>(handle: ListenerHandle, event_type: EventType, listener: F) -> Listener<'a>
-        where F: FnMut(Event, &DaZeusClient) + 'a
+        where F: FnMut(Event, &dyn DaZeusClient) + 'a
     {
-        Listener { event: event_type, handle: handle, callback: RefCell::new(Box::new(listener)) }
+        Listener { event: event_type, handle, callback: RefCell::new(Box::new(listener)) }
     }
 
     pub fn call<T: Read + Write>(&self, event: Event, dazeus: &DaZeus<T>) {
         let mut fbox = self.callback.borrow_mut();
         let func = fbox.deref_mut();
-        func(event, dazeus as &DaZeusClient);
+        func(event, dazeus as &dyn DaZeusClient);
     }
 
     pub fn has_handle(&self, handle: ListenerHandle) -> bool {

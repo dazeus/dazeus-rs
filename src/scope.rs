@@ -1,4 +1,4 @@
-use serialize::json::{ToJson, Json, Array};
+use crate::serialize::json::{ToJson, Json, Array};
 
 /// A scope for retrieving permissions and properties.
 ///
@@ -30,7 +30,7 @@ pub struct Scope {
 impl Scope {
     /// Construct a new scope with the specified limitations for network, sender and receiver
     pub fn new(network: Option<String>, sender: Option<String>, receiver: Option<String>) -> Scope {
-        Scope { network: network, sender: sender, receiver: receiver }
+        Scope { network, sender, receiver }
     }
 
     /// Scope to everyone and anything

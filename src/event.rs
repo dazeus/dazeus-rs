@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use serialize::json::Json;
+use crate::serialize::json::Json;
 use super::error::{ParseEventTypeError, InvalidJsonError};
 use std::ops::Index;
 
@@ -179,7 +179,7 @@ impl Event {
     /// ));
     /// ```
     pub fn new(event: EventType, params: Vec<String>) -> Event {
-        Event { event: event, params: params }
+        Event { event, params }
     }
 
     /// Create a new event based on a Json data object.

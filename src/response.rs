@@ -1,5 +1,5 @@
-use serialize::json::Json;
-use serialize::json::Object;
+use crate::serialize::json::Json;
+use crate::serialize::json::Object;
 use super::error::InvalidJsonError;
 
 /// The response from a command send to the DaZeus server.

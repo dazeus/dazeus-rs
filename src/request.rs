@@ -1,12 +1,12 @@
 use super::scope::Scope;
-use serialize::json::{Json, ToJson, Object, Array};
+use crate::serialize::json::{Json, ToJson, Object, Array};
 use super::event::EventType;
 use std::string::ToString;
 use std::str::FromStr;
 use super::error::ParseConfigGroupError;
 
 /// The version of the DaZeus plugin communication protocol that these bindings understand.
-pub const PROTOCOL_VERSION: &'static str = "1";
+pub const PROTOCOL_VERSION: &str = "1";
 
 /// A `String` for the target IRC network.
 pub type Network = String;
@@ -469,7 +469,7 @@ impl ToJson for Request {
             },
         }
 
-        if params.len() > 0 {
+        if !params.is_empty() {
             obj.insert("params".to_string(), Json::Array(params));
         }
 
