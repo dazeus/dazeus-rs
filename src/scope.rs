@@ -1,4 +1,4 @@
-use crate::serialize::json::{ToJson, Json, Array};
+use rustc_serialize::json::{ToJson, Json, Array};
 
 /// A scope for retrieving permissions and properties.
 ///

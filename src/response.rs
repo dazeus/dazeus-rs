@@ -1,5 +1,5 @@
-use crate::serialize::json::Json;
-use crate::serialize::json::Object;
+use rustc_serialize::json::Json;
+use rustc_serialize::json::Object;
 use super::error::InvalidJsonError;
 
 /// The response from a command send to the DaZeus server.

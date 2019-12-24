@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use crate::serialize::json::Json;
+use rustc_serialize::json::Json;
 use super::error::{ParseEventTypeError, InvalidJsonError};
 use std::ops::Index;
 

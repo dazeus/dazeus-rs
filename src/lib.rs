@@ -52,11 +52,6 @@
 //! dazeus.join("local", "#test");
 //! ```
 
-#[macro_use]
-extern crate log;
-extern crate rustc_serialize as serialize;
-extern crate unix_socket;
-
 pub use self::connection::*;
 pub use self::dazeus::*;
 pub use self::error::*;

@@ -1,5 +1,5 @@
 use std::io::Error as IoError;
-use crate::serialize::json::ParserError as JsonParserError;
+use rustc_serialize::json::ParserError as JsonParserError;
 use std::str::Utf8Error;
 use std::fmt::{Display, Formatter};
 use std::fmt::Error as FmtError;

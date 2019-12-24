@@ -1,5 +1,5 @@
 use super::scope::Scope;
-use crate::serialize::json::{Json, ToJson, Object, Array};
+use rustc_serialize::json::{Json, ToJson, Object, Array};
 use super::event::EventType;
 use std::string::ToString;
 use std::str::FromStr;
