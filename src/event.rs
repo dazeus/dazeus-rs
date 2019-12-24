@@ -1,5 +1,5 @@
 use super::error::{InvalidJsonError, ParseEventTypeError};
-use rustc_serialize::json::Json;
+use serde_json::Value as JsonValue;
 use std::ops::Index;
 use std::str::FromStr;
 
@@ -156,7 +156,7 @@ pub struct Event {
 }
 
 /// Returns whether or not the given Json data could be a valid event object.
-pub fn is_event_json(data: &Json) -> bool {
+pub fn is_event_json(data: &JsonValue) -> bool {
     data.is_object() && data.as_object().unwrap().contains_key("event")
 }
 
@@ -184,14 +184,14 @@ impl Event {
     ///
     /// Typically this method will be called by the bindings itself to create an event instance
     /// from some received json blob from the core.
-    pub fn from_json(data: &Json) -> Result<Event, InvalidJsonError> {
+    pub fn from_json(data: &JsonValue) -> Result<Event, InvalidJsonError> {
         if data.is_object() {
             let obj = data.as_object().unwrap();
             if obj.contains_key("event") && obj.contains_key("params") {
                 let evt = obj.get("event").unwrap();
                 let params = obj.get("params").unwrap();
                 if evt.is_string() && params.is_array() {
-                    Event::create_event(&evt.as_string().unwrap(), &params.as_array().unwrap())
+                    Event::create_event(evt.as_str().unwrap(), &params.as_array().unwrap())
                 } else {
                     Err(InvalidJsonError::new(""))
                 }
@@ -204,10 +204,10 @@ impl Event {
     }
 
     /// Create a new event based on the properties extracted from the Json.
-    fn create_event(evt: &str, params: &[Json]) -> Result<Event, InvalidJsonError> {
+    fn create_event(evt: &str, params: &[JsonValue]) -> Result<Event, InvalidJsonError> {
         if evt == "COMMAND" {
             if params.len() >= 4 && params[3].is_string() {
-                let cmd = params[3].as_string().unwrap().to_string();
+                let cmd = params[3].as_str().unwrap().to_string();
                 Ok(Event::new(
                     EventType::Command(cmd),
                     Event::param_strs(params),
@@ -224,11 +224,11 @@ impl Event {
     }
 
     /// Extract string parameters from an array of `Json::String` objects.
-    fn param_strs(params: &[Json]) -> Vec<String> {
+    fn param_strs(params: &[JsonValue]) -> Vec<String> {
         let mut strs = Vec::new();
         for param in params {
             if param.is_string() {
-                strs.push(param.as_string().unwrap().to_string());
+                strs.push(param.as_str().unwrap().to_string());
             }
         }
         strs
