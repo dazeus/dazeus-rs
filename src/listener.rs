@@ -11,6 +11,7 @@ pub type ListenerHandle = u64;
 pub struct Listener<'a> {
     pub event: EventType,
     pub handle: ListenerHandle,
+    #[allow(clippy::type_complexity)]
     callback: RefCell<Box<dyn FnMut(Event, &dyn DaZeusClient) + 'a>>,
 }
 

@@ -5,7 +5,7 @@ use std::io::Error as IoError;
 use std::str::Utf8Error;
 
 /// Error returned when the passed Json did not have the required structure.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct InvalidJsonError {
     message: String,
 }
@@ -22,7 +22,7 @@ impl InvalidJsonError {
 /// Error returned when a string could not be parsed as an `EventType`.
 ///
 /// This may occur if an event is provided by DaZeus which is unknown by this implementation.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct ParseEventTypeError {
     _priv: (),
 }
@@ -35,7 +35,7 @@ impl ParseEventTypeError {
 }
 
 /// Error returned when a string could not be parsed as a `ConfigGroup`.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct ParseConfigGroupError {
     _priv: (),
 }
@@ -48,7 +48,7 @@ impl ParseConfigGroupError {
 }
 
 /// Error when an unexpected or invalid response was received from DaZeus
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct ReceiveError {
     _priv: (),
 }

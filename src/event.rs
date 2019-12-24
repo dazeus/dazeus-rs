@@ -204,7 +204,7 @@ impl Event {
     }
 
     /// Create a new event based on the properties extracted from the Json.
-    fn create_event(evt: &str, params: &Vec<Json>) -> Result<Event, InvalidJsonError> {
+    fn create_event(evt: &str, params: &[Json]) -> Result<Event, InvalidJsonError> {
         if evt == "COMMAND" {
             if params.len() >= 4 && params[3].is_string() {
                 let cmd = params[3].as_string().unwrap().to_string();
@@ -224,7 +224,7 @@ impl Event {
     }
 
     /// Extract string parameters from an array of `Json::String` objects.
-    fn param_strs(params: &Vec<Json>) -> Vec<String> {
+    fn param_strs(params: &[Json]) -> Vec<String> {
         let mut strs = Vec::new();
         for param in params {
             if param.is_string() {
@@ -235,7 +235,7 @@ impl Event {
     }
 
     /// Retrieve a parameter from the list of parameters contained in the event.
-    pub fn param<'a>(&'a self, idx: usize) -> &'a str {
+    pub fn param(&self, idx: usize) -> &str {
         &self.params[idx][..]
     }
 
@@ -243,12 +243,17 @@ impl Event {
     pub fn len(&self) -> usize {
         self.params.len()
     }
+
+    /// Do we have any parameters?
+    pub fn is_empty(&self) -> bool {
+        self.params.is_empty()
+    }
 }
 
 impl<'b> Index<usize> for Event {
     type Output = str;
 
-    fn index<'a>(&'a self, index: usize) -> &'a str {
+    fn index(&self, index: usize) -> &str {
         self.param(index)
     }
 }

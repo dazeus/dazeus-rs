@@ -263,9 +263,7 @@ where
 {
     /// Try to send a request to DaZeus
     fn try_send(&self, request: Request) -> Result<Response, Error> {
-        {
-            self.handler.borrow_mut().write(request)?
-        };
+        self.handler.borrow_mut().write(request)?;
         self.next_response()
     }
 
@@ -293,10 +291,13 @@ where
             Some(EventType::Command(_)) => Response::for_success(),
 
             // unsubscribe if there are no more listeners for the event
-            Some(evt) => match self.listeners.iter().any(|l| l.event == evt) {
-                false => self.send(Request::Unsubscribe(evt)),
-                true => Response::for_success(),
-            },
+            Some(evt) => {
+                if self.listeners.iter().any(|l| l.event == evt) {
+                    Response::for_success()
+                } else {
+                    self.send(Request::Unsubscribe(evt))
+                }
+            }
 
             None => Response::for_fail("Could not find listener with given handle"),
         }
@@ -534,7 +535,7 @@ where
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.message(network, user, message)
             } else if highlight {
@@ -554,7 +555,7 @@ where
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.notice(network, user, message)
             } else {
@@ -565,13 +566,13 @@ where
         }
     }
 
-    /// Send a reply (as a ctcp action) in response to some event.
+    /// Send a reply (as a CTCP action) in response to some event.
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_action(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.action(network, user, message)
             } else {

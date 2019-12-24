@@ -82,10 +82,7 @@ impl Response {
 
     /// Returns whether or not a property with the given name exists.
     pub fn has(&self, prop: &str) -> bool {
-        match self.get_str(prop) {
-            Some(_) => true,
-            None => false,
-        }
+        self.get_str(prop).is_some()
     }
 
     /// Check whether a Response contains a `success` property and whether it was true.

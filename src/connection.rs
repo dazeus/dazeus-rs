@@ -1,5 +1,6 @@
 use std::io::{Error, ErrorKind, Read, Result, Write};
 use std::net::TcpStream;
+use std::str::FromStr;
 use unix_socket::UnixStream;
 
 /// A connection enum that encapsulates TCP and Unix sockets.
@@ -28,11 +29,15 @@ impl Connection {
             },
         }
     }
+}
+
+impl FromStr for Connection {
+    type Err = Error;
 
     /// Takes a string in the format type:connection_str and tries to connect
     /// to that location. Returns the connection inside an enum that can be used
     /// inside DaZeus directly.
-    pub fn from_str(connection_str: &str) -> Result<Connection> {
+    fn from_str(connection_str: &str) -> Result<Self> {
         let splits = connection_str.splitn(2, ':').collect::<Vec<_>>();
         if splits.len() == 2 && splits[0] == "unix" {
             Ok(Connection::Unix(UnixStream::connect(splits[1])?))

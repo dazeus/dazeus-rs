@@ -9,6 +9,7 @@
 //! Creating a new connection can now be done using the following basic snippet:
 //!
 //! ```no_run
+//! use std::str::FromStr;
 //! use dazeus::{Connection,DaZeus};
 //! let socket = "unix:/tmp/dazeus.sock";
 //! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
@@ -32,6 +33,7 @@
 //!
 //! ```no_run
 //! # use dazeus::*;
+//! # use std::str::FromStr;
 //! let socket = "unix:/tmp/dazeus.sock";
 //! let mut dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.subscribe(EventType::PrivMsg, |evt, dazeus| {
@@ -47,6 +49,7 @@
 //!
 //! ```no_run
 //! # use dazeus::*;
+//! # use std::str::FromStr;
 //! let socket = "unix:/tmp/dazeus.sock";
 //! let dazeus = DaZeus::new(Connection::from_str(socket).unwrap());
 //! dazeus.join("local", "#test");
