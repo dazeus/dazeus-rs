@@ -1,12 +1,12 @@
-use std::io::{Read, Write};
-use rustc_serialize::json::{ToJson, Json};
-use log::debug;
-use std::str::{from_utf8};
-use super::response::Response;
-use super::event::{Event, is_event_json};
-use super::request::Request;
 use super::error::Error;
+use super::event::{is_event_json, Event};
+use super::request::Request;
+use super::response::Response;
+use log::debug;
+use rustc_serialize::json::{Json, ToJson};
 use std::borrow::ToOwned;
+use std::io::{Read, Write};
+use std::str::from_utf8;
 
 pub enum Message {
     Response(Response),
@@ -18,9 +18,15 @@ pub struct Handler<T> {
     buffer: Vec<u8>,
 }
 
-impl<T> Handler<T> where T: Read + Write {
+impl<T> Handler<T>
+where
+    T: Read + Write,
+{
     pub fn new(socket: T) -> Handler<T> {
-        Handler { socket, buffer: Vec::new() }
+        Handler {
+            socket,
+            buffer: Vec::new(),
+        }
     }
 
     pub fn read(&mut self) -> Result<Message, Error> {
@@ -64,7 +70,10 @@ impl<T> Handler<T> where T: Read + Write {
         }
 
         if message_len > 0 && self.buffer.len() >= offset + message_len {
-            debug!("Found message in buffer starting at {} with length {}", offset, message_len);
+            debug!(
+                "Found message in buffer starting at {} with length {}",
+                offset, message_len
+            );
             Some((offset, message_len))
         } else {
             debug!("Found no complete message in buffer");
@@ -83,7 +92,7 @@ impl<T> Handler<T> where T: Read + Write {
         };
 
         // first make sure we have a correct internal state
-        self.buffer = self.buffer[offset+length..].to_owned(); // iter().collect();
+        self.buffer = self.buffer[offset + length..].to_owned(); // iter().collect();
 
         let json = json_try??;
 
@@ -103,7 +112,8 @@ impl<T> Handler<T> where T: Read + Write {
         debug!("Sending message: {}", encoded);
 
         let bytes = encoded.as_bytes();
-        self.socket.write_all(format!("{}", bytes.len()).as_bytes())?;
+        self.socket
+            .write_all(format!("{}", bytes.len()).as_bytes())?;
         self.socket.write_all(bytes)?;
         Ok(())
     }

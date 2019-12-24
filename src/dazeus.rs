@@ -1,16 +1,16 @@
-use std::io::{Read, Write};
+use super::error::{Error, ReceiveError};
 use super::event::{Event, EventType};
 use super::handler::{Handler, Message};
-use super::listener::{ListenerHandle, Listener};
+use super::listener::{Listener, ListenerHandle};
 use super::request::{ConfigGroup, Request};
 use super::response::Response;
 use super::scope::Scope;
-use super::error::{ReceiveError, Error};
 use std::cell::RefCell;
+use std::io::{Read, Write};
 
 struct ResponseQueue {
     pub responses: Vec<Response>,
-    pub expecting: u64
+    pub expecting: u64,
 }
 
 /// The base DaZeus struct.
@@ -21,10 +21,13 @@ pub struct DaZeus<'a, T> {
     handler: RefCell<Handler<T>>,
     listeners: Vec<Listener<'a>>,
     current_handle: u64,
-    queue: RefCell<ResponseQueue>
+    queue: RefCell<ResponseQueue>,
 }
 
-impl<'a, T> DaZeus<'a, T> where T: Read + Write {
+impl<'a, T> DaZeus<'a, T>
+where
+    T: Read + Write,
+{
     /// Create a new instance of DaZeus from the given connection.
     pub fn new(conn: T) -> DaZeus<'a, T> {
         DaZeus {
@@ -46,7 +49,9 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     }
 
     fn next_response(&self) -> Result<Response, Error> {
-        { self.queue.borrow_mut().expecting += 1; }
+        {
+            self.queue.borrow_mut().expecting += 1;
+        }
         loop {
             {
                 let mut queue = self.queue.borrow_mut();
@@ -67,7 +72,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
                     } else {
                         queue.responses.push(r);
                     }
-                },
+                }
             }
         }
     }
@@ -78,7 +83,7 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
             Message::Event(e) => {
                 self.handle_event(e.clone());
                 Ok(e)
-            },
+            }
             Message::Response(_) => Err(Error::ReceiveError(ReceiveError::new())),
         }
     }
@@ -101,7 +106,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to an event type and call the callback function every time such an event occurs.
     pub fn subscribe<F>(&mut self, event: EventType, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &dyn DaZeusClient) + 'a
+    where
+        F: FnMut(Event, &dyn DaZeusClient) + 'a,
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
@@ -118,7 +124,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to a command and call the callback function every time such a command occurs.
     pub fn subscribe_command<F>(&mut self, command: &str, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &dyn DaZeusClient) + 'a
+    where
+        F: FnMut(Event, &dyn DaZeusClient) + 'a,
     {
         self.subscribe(EventType::Command(command.to_string()), callback)
     }
@@ -250,10 +257,15 @@ pub trait DaZeusClient<'a> {
     fn reply_with_action(&self, event: &Event, message: &str) -> Response;
 }
 
-impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
+impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T>
+where
+    T: Read + Write,
+{
     /// Try to send a request to DaZeus
     fn try_send(&self, request: Request) -> Result<Response, Error> {
-        { self.handler.borrow_mut().write(request)? };
+        {
+            self.handler.borrow_mut().write(request)?
+        };
         self.next_response()
     }
 
@@ -319,7 +331,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Message(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -328,7 +340,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Notice(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -337,7 +349,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Ctcp(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -346,7 +358,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::CtcpReply(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -355,7 +367,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Action(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -430,7 +442,11 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Set a property to be stored in the bot database.
     fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response {
-        self.send(Request::SetProperty(name.to_string(), value.to_string(), scope))
+        self.send(Request::SetProperty(
+            name.to_string(),
+            value.to_string(),
+            scope,
+        ))
     }
 
     /// Remove a property stored in the bot database.
@@ -452,7 +468,11 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     ///
     /// Will return the default if it was not.
     fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response {
-        self.send(Request::HasPermission(permission.to_string(), default, scope))
+        self.send(Request::HasPermission(
+            permission.to_string(),
+            default,
+            scope,
+        ))
     }
 
     /// Remove a set permission from the bot.
@@ -478,7 +498,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
                         self.send(Request::Unsubscribe(EventType::Whois));
                     }
                     return evt;
-                },
+                }
                 _ => (),
             }
         }
@@ -502,7 +522,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
                         self.send(Request::Unsubscribe(EventType::Names));
                     }
                     return evt;
-                },
+                }
                 _ => (),
             }
         }
@@ -518,11 +538,11 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
             if channel == nick {
                 self.message(network, user, message)
             } else if highlight {
-    let msg = format!("{}: {}", user, message);
-    self.message(network, channel, &msg[..])
-} else {
-    self.message(network, channel, message)
-}
+                let msg = format!("{}: {}", user, message);
+                self.message(network, channel, &msg[..])
+            } else {
+                self.message(network, channel, message)
+            }
         } else {
             Response::for_fail("Not an event to reply to")
         }

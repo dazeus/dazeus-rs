@@ -1,17 +1,21 @@
-use std::io::Error as IoError;
 use rustc_serialize::json::ParserError as JsonParserError;
-use std::str::Utf8Error;
-use std::fmt::{Display, Formatter};
 use std::fmt::Error as FmtError;
+use std::fmt::{Display, Formatter};
+use std::io::Error as IoError;
+use std::str::Utf8Error;
 
 /// Error returned when the passed Json did not have the required structure.
 #[derive(Debug, Clone, PartialEq)]
-pub struct InvalidJsonError { message: String }
+pub struct InvalidJsonError {
+    message: String,
+}
 
 impl InvalidJsonError {
     /// Create a new error instance.
     pub fn new(message: &str) -> InvalidJsonError {
-        InvalidJsonError { message: message.to_string() }
+        InvalidJsonError {
+            message: message.to_string(),
+        }
     }
 }
 
@@ -19,7 +23,9 @@ impl InvalidJsonError {
 ///
 /// This may occur if an event is provided by DaZeus which is unknown by this implementation.
 #[derive(Debug, Clone, PartialEq)]
-pub struct ParseEventTypeError { _priv: () }
+pub struct ParseEventTypeError {
+    _priv: (),
+}
 
 impl ParseEventTypeError {
     /// Create a new error instance.
@@ -30,7 +36,9 @@ impl ParseEventTypeError {
 
 /// Error returned when a string could not be parsed as a `ConfigGroup`.
 #[derive(Debug, Clone, PartialEq)]
-pub struct ParseConfigGroupError { _priv: () }
+pub struct ParseConfigGroupError {
+    _priv: (),
+}
 
 impl ParseConfigGroupError {
     /// Create a new error instance.
@@ -41,7 +49,9 @@ impl ParseConfigGroupError {
 
 /// Error when an unexpected or invalid response was received from DaZeus
 #[derive(Debug, Clone, PartialEq)]
-pub struct ReceiveError { _priv: () }
+pub struct ReceiveError {
+    _priv: (),
+}
 
 impl ReceiveError {
     pub fn new() -> ReceiveError {

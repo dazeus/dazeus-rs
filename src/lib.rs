@@ -63,10 +63,10 @@ pub use self::scope::*;
 
 mod connection;
 mod dazeus;
+mod error;
 mod event;
 mod handler;
 mod listener;
 mod request;
 mod response;
 mod scope;
-mod error;

@@ -1,4 +1,4 @@
-use rustc_serialize::json::{ToJson, Json, Array};
+use rustc_serialize::json::{Array, Json, ToJson};
 
 /// A scope for retrieving permissions and properties.
 ///
@@ -30,7 +30,11 @@ pub struct Scope {
 impl Scope {
     /// Construct a new scope with the specified limitations for network, sender and receiver
     pub fn new(network: Option<String>, sender: Option<String>, receiver: Option<String>) -> Scope {
-        Scope { network, sender, receiver }
+        Scope {
+            network,
+            sender,
+            receiver,
+        }
     }
 
     /// Scope to everyone and anything
@@ -55,7 +59,11 @@ impl Scope {
 
     /// Scope to a specific receiver and channel (typically a user in a channel)
     pub fn to(network: &str, sender: &str, receiver: &str) -> Scope {
-        Scope::new(Some(network.to_string()), Some(sender.to_string()), Some(receiver.to_string()))
+        Scope::new(
+            Some(network.to_string()),
+            Some(sender.to_string()),
+            Some(receiver.to_string()),
+        )
     }
 
     /// Checks whether the scope is set to be applied to everything.

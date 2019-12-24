@@ -1,6 +1,6 @@
-use std::io::{Read, Write, Result, Error, ErrorKind};
-use unix_socket::UnixStream;
+use std::io::{Error, ErrorKind, Read, Result, Write};
 use std::net::TcpStream;
+use unix_socket::UnixStream;
 
 /// A connection enum that encapsulates TCP and Unix sockets.
 ///
@@ -11,7 +11,7 @@ pub enum Connection {
     /// A Unix domain socket, as implemented by the `unix_socket` crate.
     Unix(UnixStream),
     /// A TCP stream, as implemented by `std::net::TcpStream`.
-    Tcp(TcpStream)
+    Tcp(TcpStream),
 }
 
 impl Connection {
@@ -20,12 +20,12 @@ impl Connection {
         match *self {
             Connection::Unix(ref stream) => match stream.try_clone() {
                 Ok(cloned) => Ok(Connection::Unix(cloned)),
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             },
             Connection::Tcp(ref stream) => match stream.try_clone() {
                 Ok(cloned) => Ok(Connection::Tcp(cloned)),
-                Err(e) => Err(e)
-            }
+                Err(e) => Err(e),
+            },
         }
     }
 
@@ -39,7 +39,10 @@ impl Connection {
         } else if splits.len() == 2 && splits[0] == "tcp" {
             Ok(Connection::Tcp(TcpStream::connect(splits[1])?))
         } else {
-            Err(Error::new(ErrorKind::InvalidInput, "Unknown connection type"))
+            Err(Error::new(
+                ErrorKind::InvalidInput,
+                "Unknown connection type",
+            ))
         }
     }
 }
