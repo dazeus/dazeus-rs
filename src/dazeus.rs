@@ -1,16 +1,16 @@
-use std::io::{Read, Write};
+use super::error::{Error, ReceiveError};
 use super::event::{Event, EventType};
 use super::handler::{Handler, Message};
-use super::listener::{ListenerHandle, Listener};
+use super::listener::{Listener, ListenerHandle};
 use super::request::{ConfigGroup, Request};
 use super::response::Response;
 use super::scope::Scope;
-use super::error::{ReceiveError, Error};
 use std::cell::RefCell;
+use std::io::{Read, Write};
 
 struct ResponseQueue {
     pub responses: Vec<Response>,
-    pub expecting: u64
+    pub expecting: u64,
 }
 
 /// The base DaZeus struct.
@@ -21,10 +21,13 @@ pub struct DaZeus<'a, T> {
     handler: RefCell<Handler<T>>,
     listeners: Vec<Listener<'a>>,
     current_handle: u64,
-    queue: RefCell<ResponseQueue>
+    queue: RefCell<ResponseQueue>,
 }
 
-impl<'a, T> DaZeus<'a, T> where T: Read + Write {
+impl<'a, T> DaZeus<'a, T>
+where
+    T: Read + Write,
+{
     /// Create a new instance of DaZeus from the given connection.
     pub fn new(conn: T) -> DaZeus<'a, T> {
         DaZeus {
@@ -41,22 +44,24 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
     /// Loop wait for messages to receive in a blocking way.
     pub fn listen(&self) -> Result<(), Error> {
         loop {
-            try!(self.try_next_event());
+            self.try_next_event()?;
         }
     }
 
     fn next_response(&self) -> Result<Response, Error> {
-        { self.queue.borrow_mut().expecting += 1; }
+        {
+            self.queue.borrow_mut().expecting += 1;
+        }
         loop {
             {
                 let mut queue = self.queue.borrow_mut();
-                if queue.responses.len() > 0 && queue.expecting == 0 {
+                if !queue.responses.is_empty() && queue.expecting == 0 {
                     return Ok(queue.responses.pop().unwrap());
                 }
             }
 
             let msg = { self.handler.borrow_mut().read() };
-            match try!(msg) {
+            match msg? {
                 Message::Event(e) => self.handle_event(e),
                 Message::Response(r) => {
                     let mut queue = self.queue.borrow_mut();
@@ -67,18 +72,18 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
                     } else {
                         queue.responses.push(r);
                     }
-                },
+                }
             }
         }
     }
 
     fn try_next_event(&self) -> Result<Event, Error> {
         let msg = { self.handler.borrow_mut().read() };
-        match try!(msg) {
+        match msg? {
             Message::Event(e) => {
                 self.handle_event(e.clone());
                 Ok(e)
-            },
+            }
             Message::Response(_) => Err(Error::ReceiveError(ReceiveError::new())),
         }
     }
@@ -101,7 +106,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to an event type and call the callback function every time such an event occurs.
     pub fn subscribe<F>(&mut self, event: EventType, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeusClient) + 'a
+    where
+        F: FnMut(Event, &dyn DaZeusClient) + 'a,
     {
         let request = match event {
             EventType::Command(ref cmd) => Request::SubscribeCommand(cmd.clone(), None),
@@ -118,7 +124,8 @@ impl<'a, T> DaZeus<'a, T> where T: Read + Write {
 
     /// Subscribe to a command and call the callback function every time such a command occurs.
     pub fn subscribe_command<F>(&mut self, command: &str, callback: F) -> (ListenerHandle, Response)
-        where F: FnMut(Event, &DaZeusClient) + 'a
+    where
+        F: FnMut(Event, &dyn DaZeusClient) + 'a,
     {
         self.subscribe(EventType::Command(command.to_string()), callback)
     }
@@ -250,10 +257,13 @@ pub trait DaZeusClient<'a> {
     fn reply_with_action(&self, event: &Event, message: &str) -> Response;
 }
 
-impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
+impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T>
+where
+    T: Read + Write,
+{
     /// Try to send a request to DaZeus
     fn try_send(&self, request: Request) -> Result<Response, Error> {
-        { try!(self.handler.borrow_mut().write(request)) };
+        self.handler.borrow_mut().write(request)?;
         self.next_response()
     }
 
@@ -269,22 +279,25 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     fn unsubscribe(&mut self, handle: ListenerHandle) -> Response {
         // first find the event type
         let event = {
-            match self.listeners.iter().find(|&ref l| l.has_handle(handle)) {
+            match self.listeners.iter().find(|l| l.has_handle(handle)) {
                 Some(listener) => Some(listener.event.clone()),
                 None => None,
             }
         };
 
-        self.listeners.retain(|&ref l| !l.has_handle(handle));
+        self.listeners.retain(|l| !l.has_handle(handle));
         match event {
             // we can't unsubscribe commands
             Some(EventType::Command(_)) => Response::for_success(),
 
             // unsubscribe if there are no more listeners for the event
-            Some(evt) => match self.listeners.iter().any(|&ref l| l.event == evt) {
-                false => self.send(Request::Unsubscribe(evt)),
-                true => Response::for_success(),
-            },
+            Some(evt) => {
+                if self.listeners.iter().any(|l| l.event == evt) {
+                    Response::for_success()
+                } else {
+                    self.send(Request::Unsubscribe(evt))
+                }
+            }
 
             None => Response::for_fail("Could not find listener with given handle"),
         }
@@ -292,7 +305,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Remove all subscriptions for a specific event type.
     fn unsubscribe_all(&mut self, event: EventType) -> Response {
-        self.listeners.retain(|&ref l| l.event != event);
+        self.listeners.retain(|l| l.event != event);
         match event {
             EventType::Command(_) => Response::for_success(),
             _ => self.send(Request::Unsubscribe(event)),
@@ -301,7 +314,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Check if there is any active listener for the given event type.
     fn has_any_subscription(&self, event: EventType) -> bool {
-        self.listeners.iter().any(|&ref l| l.event == event)
+        self.listeners.iter().any(|l| l.event == event)
     }
 
     /// Retrieve the networks the bot is connected to.
@@ -319,7 +332,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Message(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -328,7 +341,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Notice(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -337,7 +350,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Ctcp(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -346,7 +359,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::CtcpReply(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -355,7 +368,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         self.send(Request::Action(
             network.to_string(),
             channel.to_string(),
-            message.to_string()
+            message.to_string(),
         ))
     }
 
@@ -430,7 +443,11 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
 
     /// Set a property to be stored in the bot database.
     fn set_property(&self, name: &str, value: &str, scope: Scope) -> Response {
-        self.send(Request::SetProperty(name.to_string(), value.to_string(), scope))
+        self.send(Request::SetProperty(
+            name.to_string(),
+            value.to_string(),
+            scope,
+        ))
     }
 
     /// Remove a property stored in the bot database.
@@ -452,7 +469,11 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     ///
     /// Will return the default if it was not.
     fn has_permission(&self, permission: &str, default: bool, scope: Scope) -> Response {
-        self.send(Request::HasPermission(permission.to_string(), default, scope))
+        self.send(Request::HasPermission(
+            permission.to_string(),
+            default,
+            scope,
+        ))
     }
 
     /// Remove a set permission from the bot.
@@ -478,7 +499,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
                         self.send(Request::Unsubscribe(EventType::Whois));
                     }
                     return evt;
-                },
+                }
                 _ => (),
             }
         }
@@ -502,7 +523,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
                         self.send(Request::Unsubscribe(EventType::Names));
                     }
                     return evt;
-                },
+                }
                 _ => (),
             }
         }
@@ -514,16 +535,14 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply(&self, event: &Event, message: &str, highlight: bool) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.message(network, user, message)
+            } else if highlight {
+                let msg = format!("{}: {}", user, message);
+                self.message(network, channel, &msg[..])
             } else {
-                if highlight {
-                    let msg = format!("{}: {}", user, message);
-                    self.message(network, channel, &msg[..])
-                } else {
-                    self.message(network, channel, message)
-                }
+                self.message(network, channel, message)
             }
         } else {
             Response::for_fail("Not an event to reply to")
@@ -536,7 +555,7 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_notice(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.notice(network, user, message)
             } else {
@@ -547,13 +566,13 @@ impl<'a, T> DaZeusClient<'a> for DaZeus<'a, T> where T: Read + Write {
         }
     }
 
-    /// Send a reply (as a ctcp action) in response to some event.
+    /// Send a reply (as a CTCP action) in response to some event.
     ///
     /// Note that not all types of events can be responded to. Mostly message type events
     /// concerning some IRC user can be responded to. Join events can also be responded to.
     fn reply_with_action(&self, event: &Event, message: &str) -> Response {
         if let Some((network, channel, user)) = targets_for_event(event) {
-            let nick = self.nick(network).unwrap_or("".to_string());
+            let nick = self.nick(network).unwrap_or_else(|| "".to_string());
             if channel == nick {
                 self.action(network, user, message)
             } else {

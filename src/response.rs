@@ -1,11 +1,11 @@
-use serialize::json::Json;
-use serialize::json::Object;
 use super::error::InvalidJsonError;
+use rustc_serialize::json::Json;
+use rustc_serialize::json::Object;
 
 /// The response from a command send to the DaZeus server.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Response {
-    data: Json
+    data: Json,
 }
 
 impl Response {
@@ -18,7 +18,9 @@ impl Response {
         obj.insert("success".to_string(), Json::Boolean(false));
         obj.insert("reason".to_string(), Json::String(msg.to_string()));
 
-        Response { data: Json::Object(obj) }
+        Response {
+            data: Json::Object(obj),
+        }
     }
 
     /// Create a new response based upon a successful operation.
@@ -28,7 +30,9 @@ impl Response {
         let mut obj = Object::new();
         obj.insert("success".to_string(), Json::Boolean(true));
 
-        Response { data: Json::Object(obj) }
+        Response {
+            data: Json::Object(obj),
+        }
     }
 
     /// Create a new response based on a Json object.
@@ -52,9 +56,7 @@ impl Response {
     /// Returns `Some(data)` if the property exists, or `None` if the property doesn't exist.
     pub fn get<'a>(&'a self, prop: &'a str) -> Option<&'a Json> {
         match self.data {
-            Json::Object(ref obj) => {
-                obj.get(prop)
-            },
+            Json::Object(ref obj) => obj.get(prop),
             _ => None,
         }
     }
@@ -80,10 +82,7 @@ impl Response {
 
     /// Returns whether or not a property with the given name exists.
     pub fn has(&self, prop: &str) -> bool {
-        match self.get_str(prop) {
-            Some(_) => true,
-            None => false
-        }
+        self.get_str(prop).is_some()
     }
 
     /// Check whether a Response contains a `success` property and whether it was true.

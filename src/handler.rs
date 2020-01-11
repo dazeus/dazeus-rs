@@ -1,11 +1,12 @@
-use std::io::{Read, Write};
-use serialize::json::{ToJson, Json};
-use std::str::{from_utf8};
-use super::response::Response;
-use super::event::{Event, is_event_json};
-use super::request::Request;
 use super::error::Error;
+use super::event::{is_event_json, Event};
+use super::request::Request;
+use super::response::Response;
+use log::debug;
+use rustc_serialize::json::{Json, ToJson};
 use std::borrow::ToOwned;
+use std::io::{Read, Write};
+use std::str::from_utf8;
 
 pub enum Message {
     Response(Response),
@@ -17,9 +18,15 @@ pub struct Handler<T> {
     buffer: Vec<u8>,
 }
 
-impl<T> Handler<T> where T: Read + Write {
+impl<T> Handler<T>
+where
+    T: Read + Write,
+{
     pub fn new(socket: T) -> Handler<T> {
-        Handler { socket: socket, buffer: Vec::new() }
+        Handler {
+            socket,
+            buffer: Vec::new(),
+        }
     }
 
     pub fn read(&mut self) -> Result<Message, Error> {
@@ -28,14 +35,14 @@ impl<T> Handler<T> where T: Read + Write {
                 return self.make_message(offset, len);
             }
 
-            try!(self.retrieve_from_socket());
+            self.retrieve_from_socket()?;
         }
     }
 
     /// Retrieve new data from the socket
     fn retrieve_from_socket(&mut self) -> Result<(), Error> {
         let mut buf = [0; 1024];
-        let bytes = try!(self.socket.read(&mut buf));
+        let bytes = self.socket.read(&mut buf)?;
         for b in buf[..bytes].iter() {
             self.buffer.push(*b);
         }
@@ -63,7 +70,10 @@ impl<T> Handler<T> where T: Read + Write {
         }
 
         if message_len > 0 && self.buffer.len() >= offset + message_len {
-            debug!("Found message in buffer starting at {} with length {}", offset, message_len);
+            debug!(
+                "Found message in buffer starting at {} with length {}",
+                offset, message_len
+            );
             Some((offset, message_len))
         } else {
             debug!("Found no complete message in buffer");
@@ -82,16 +92,16 @@ impl<T> Handler<T> where T: Read + Write {
         };
 
         // first make sure we have a correct internal state
-        self.buffer = self.buffer[offset+length..].to_owned(); // iter().collect();
+        self.buffer = self.buffer[offset + length..].to_owned(); // iter().collect();
 
-        let json = try!(try!(json_try));
+        let json = json_try??;
 
         if is_event_json(&json) {
-            let evt = try!(Event::from_json(&json));
+            let evt = Event::from_json(&json)?;
             debug!("Valid event received: {}", json);
             Ok(Message::Event(evt))
         } else {
-            let resp = try!(Response::from_json(&json));
+            let resp = Response::from_json(&json)?;
             debug!("Valid response received: {}", json);
             Ok(Message::Response(resp))
         }
@@ -102,8 +112,9 @@ impl<T> Handler<T> where T: Read + Write {
         debug!("Sending message: {}", encoded);
 
         let bytes = encoded.as_bytes();
-        try!(self.socket.write_all(format!("{}", bytes.len()).as_bytes()));
-        try!(self.socket.write_all(bytes));
+        self.socket
+            .write_all(format!("{}", bytes.len()).as_bytes())?;
+        self.socket.write_all(bytes)?;
         Ok(())
     }
 }

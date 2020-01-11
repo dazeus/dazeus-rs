@@ -1,7 +1,7 @@
-use std::str::FromStr;
-use serialize::json::Json;
-use super::error::{ParseEventTypeError, InvalidJsonError};
+use super::error::{InvalidJsonError, ParseEventTypeError};
+use rustc_serialize::json::Json;
 use std::ops::Index;
+use std::str::FromStr;
 
 /// The events that could possibly be received from the DaZeus server.
 ///
@@ -129,13 +129,11 @@ impl FromStr for EventType {
             "TOPIC" => Ok(EventType::Topic),
             "UNKNOWN" => Ok(EventType::Unknown),
             "WHOIS" => Ok(EventType::Whois),
-            other if other.len() > 8 => {
-                match &other[..7] {
-                    "COMMAND" => Ok(EventType::Command(other[8..].to_string())),
-                    _ => Err(ParseEventTypeError::new())
-                }
+            other if other.len() > 8 => match &other[..7] {
+                "COMMAND" => Ok(EventType::Command(other[8..].to_string())),
+                _ => Err(ParseEventTypeError::new()),
             },
-            _ => Err(ParseEventTypeError::new())
+            _ => Err(ParseEventTypeError::new()),
         }
     }
 }
@@ -179,7 +177,7 @@ impl Event {
     /// ));
     /// ```
     pub fn new(event: EventType, params: Vec<String>) -> Event {
-        Event { event: event, params: params }
+        Event { event, params }
     }
 
     /// Create a new event based on a Json data object.
@@ -206,24 +204,27 @@ impl Event {
     }
 
     /// Create a new event based on the properties extracted from the Json.
-    fn create_event(evt: &str, params: &Vec<Json>) -> Result<Event, InvalidJsonError> {
+    fn create_event(evt: &str, params: &[Json]) -> Result<Event, InvalidJsonError> {
         if evt == "COMMAND" {
             if params.len() >= 4 && params[3].is_string() {
                 let cmd = params[3].as_string().unwrap().to_string();
-                Ok(Event::new(EventType::Command(cmd), Event::param_strs(params)))
+                Ok(Event::new(
+                    EventType::Command(cmd),
+                    Event::param_strs(params),
+                ))
             } else {
                 Err(InvalidJsonError::new(""))
             }
         } else {
             match EventType::from_str(evt) {
                 Ok(evt) => Ok(Event::new(evt, Event::param_strs(params))),
-                Err(_) => Err(InvalidJsonError::new(""))
+                Err(_) => Err(InvalidJsonError::new("")),
             }
         }
     }
 
     /// Extract string parameters from an array of `Json::String` objects.
-    fn param_strs(params: &Vec<Json>) -> Vec<String> {
+    fn param_strs(params: &[Json]) -> Vec<String> {
         let mut strs = Vec::new();
         for param in params {
             if param.is_string() {
@@ -234,7 +235,7 @@ impl Event {
     }
 
     /// Retrieve a parameter from the list of parameters contained in the event.
-    pub fn param<'a>(&'a self, idx: usize) -> &'a str {
+    pub fn param(&self, idx: usize) -> &str {
         &self.params[idx][..]
     }
 
@@ -242,12 +243,17 @@ impl Event {
     pub fn len(&self) -> usize {
         self.params.len()
     }
+
+    /// Do we have any parameters?
+    pub fn is_empty(&self) -> bool {
+        self.params.is_empty()
+    }
 }
 
 impl<'b> Index<usize> for Event {
     type Output = str;
 
-    fn index<'a>(&'a self, index: usize) -> &'a str {
+    fn index(&self, index: usize) -> &str {
         self.param(index)
     }
 }

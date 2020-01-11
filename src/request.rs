@@ -1,12 +1,12 @@
-use super::scope::Scope;
-use serialize::json::{Json, ToJson, Object, Array};
-use super::event::EventType;
-use std::string::ToString;
-use std::str::FromStr;
 use super::error::ParseConfigGroupError;
+use super::event::EventType;
+use super::scope::Scope;
+use rustc_serialize::json::{Array, Json, Object, ToJson};
+use std::str::FromStr;
+use std::string::ToString;
 
 /// The version of the DaZeus plugin communication protocol that these bindings understand.
-pub const PROTOCOL_VERSION: &'static str = "1";
+pub const PROTOCOL_VERSION: &str = "1";
 
 /// A `String` for the target IRC network.
 pub type Network = String;
@@ -53,7 +53,7 @@ impl FromStr for ConfigGroup {
         match &s.to_ascii_lowercase()[..] {
             "plugin" => Ok(ConfigGroup::Plugin),
             "core" => Ok(ConfigGroup::Core),
-            _ => Err(ParseConfigGroupError::new())
+            _ => Err(ParseConfigGroupError::new()),
         }
     }
 }
@@ -336,7 +336,9 @@ impl Request {
 
     fn get_action_type(&self) -> String {
         let s = match *self {
-            Request::Networks | Request::Channels(_) | Request::Nick(_) | Request::Config(_, _) => "get",
+            Request::Networks | Request::Channels(_) | Request::Nick(_) | Request::Config(_, _) => {
+                "get"
+            }
             _ => "do",
         };
 
@@ -352,34 +354,37 @@ impl ToJson for Request {
 
         let mut params = Array::new();
 
-        macro_rules! push_str { ($x: expr) => ( params.push(Json::String($x.clone())) ) }
+        macro_rules! push_str {
+            ($x: expr) => {
+                params.push(Json::String($x.clone()))
+            };
+        }
 
         match *self {
             Request::Subscribe(EventType::Command(ref cmd)) => {
                 push_str!(cmd);
-            },
+            }
             Request::Unsubscribe(EventType::Command(_)) => {
                 // we can't actually unsubscribe a command
                 panic!("Cannot unsubscribe from command");
-            },
+            }
             Request::Subscribe(ref evt) => {
                 push_str!(evt.to_string());
-            },
+            }
             Request::Unsubscribe(ref evt) => {
                 push_str!(evt.to_string());
-            },
+            }
             Request::SubscribeCommand(ref cmd, Some(ref network)) => {
                 push_str!(cmd);
                 push_str!(network);
-            },
+            }
             Request::SubscribeCommand(ref cmd, None) => {
                 push_str!(cmd);
-            },
+            }
             Request::Networks => (),
-            Request::Channels(ref network)
-            | Request::Nick(ref network) => {
+            Request::Channels(ref network) | Request::Nick(ref network) => {
                 push_str!(network);
-            },
+            }
             Request::Message(ref network, ref channel, ref message)
             | Request::Notice(ref network, ref channel, ref message)
             | Request::Ctcp(ref network, ref channel, ref message)
@@ -388,40 +393,40 @@ impl ToJson for Request {
                 push_str!(network);
                 push_str!(channel);
                 push_str!(message);
-            },
+            }
             Request::Names(ref network, ref channel)
             | Request::Join(ref network, ref channel)
             | Request::Part(ref network, ref channel) => {
                 push_str!(network);
                 push_str!(channel);
-            },
+            }
             Request::Whois(ref network, ref user) => {
                 push_str!(network);
                 push_str!(user);
-            },
+            }
             Request::Handshake(ref name, ref version, Some(ref config_name)) => {
                 push_str!(name);
                 push_str!(version);
                 push_str!(PROTOCOL_VERSION.to_string());
                 push_str!(config_name);
-            },
+            }
             Request::Handshake(ref name, ref version, None) => {
                 push_str!(name);
                 push_str!(version);
                 push_str!(PROTOCOL_VERSION.to_string());
                 push_str!(name);
-            },
+            }
             Request::Config(ref key, ref ctype) => {
                 push_str!(ctype.to_string());
                 push_str!(key);
-            },
+            }
             Request::GetProperty(ref property, ref scope) => {
                 push_str!("get".to_string());
                 push_str!(property);
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::SetProperty(ref property, ref value, ref scope) => {
                 push_str!("set".to_string());
                 push_str!(property);
@@ -429,21 +434,21 @@ impl ToJson for Request {
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::UnsetProperty(ref property, ref scope) => {
                 push_str!("unset".to_string());
                 push_str!(property);
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::PropertyKeys(ref prefix, ref scope) => {
                 push_str!("keys".to_string());
                 push_str!(prefix);
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::SetPermission(ref permission, ref default, ref scope) => {
                 push_str!("set".to_string());
                 push_str!(permission);
@@ -451,7 +456,7 @@ impl ToJson for Request {
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::HasPermission(ref permission, ref default, ref scope) => {
                 push_str!("get".to_string());
                 push_str!(permission);
@@ -459,17 +464,17 @@ impl ToJson for Request {
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
             Request::UnsetPermission(ref permission, ref scope) => {
                 push_str!("unset".to_string());
                 push_str!(permission);
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
-            },
+            }
         }
 
-        if params.len() > 0 {
+        if !params.is_empty() {
             obj.insert("params".to_string(), Json::Array(params));
         }
 
