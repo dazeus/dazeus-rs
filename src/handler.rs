@@ -3,7 +3,6 @@ use super::event::{is_event_json, Event};
 use super::request::Request;
 use super::response::Response;
 use log::debug;
-use rustc_serialize::json::{Json, ToJson};
 use std::borrow::ToOwned;
 use std::io::{Read, Write};
 use std::str::from_utf8;
@@ -87,7 +86,7 @@ where
 
         // check the result of our conversion
         let json_try = match from_utf8(&self.buffer[offset..end]) {
-            Ok(json_str) => Ok(Json::from_str(json_str)),
+            Ok(json_str) => Ok(serde_json::from_str(json_str)),
             Err(e) => Err(e),
         };
 

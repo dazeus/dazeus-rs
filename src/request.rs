@@ -1,7 +1,7 @@
 use super::error::ParseConfigGroupError;
 use super::event::EventType;
 use super::scope::Scope;
-use rustc_serialize::json::{Array, Json, Object, ToJson};
+use serde_json::Value as JsonValue;
 use std::str::FromStr;
 use std::string::ToString;
 
@@ -302,7 +302,7 @@ pub enum Request {
 }
 
 impl Request {
-    fn get_json_name(&self) -> Json {
+    fn get_json_name(&self) -> JsonValue {
         let s = match *self {
             Request::Subscribe(EventType::Command(_)) => "command",
             Request::Subscribe(_) => "subscribe",
@@ -331,7 +331,7 @@ impl Request {
             Request::UnsetPermission(_, _) => "permission",
         };
 
-        Json::String(s.to_string())
+        JsonValue::String(s.to_string())
     }
 
     fn get_action_type(&self) -> String {
@@ -347,16 +347,16 @@ impl Request {
 }
 
 /// Implements transforming the request to a Json object that is ready to be sent a DaZeus core.
-impl ToJson for Request {
-    fn to_json(&self) -> Json {
-        let mut obj = Object::new();
+impl Request {
+    pub fn to_json(&self) -> JsonValue {
+        let mut obj = serde_json::Map::new();
         obj.insert(self.get_action_type(), self.get_json_name());
 
-        let mut params = Array::new();
+        let mut params = Vec::new();
 
         macro_rules! push_str {
             ($x: expr) => {
-                params.push(Json::String($x.clone()))
+                params.push(JsonValue::String($x.clone()))
             };
         }
 
@@ -452,7 +452,7 @@ impl ToJson for Request {
             Request::SetPermission(ref permission, ref default, ref scope) => {
                 push_str!("set".to_string());
                 push_str!(permission);
-                params.push(Json::Boolean(*default));
+                params.push(JsonValue::Bool(*default));
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
@@ -460,7 +460,7 @@ impl ToJson for Request {
             Request::HasPermission(ref permission, ref default, ref scope) => {
                 push_str!("get".to_string());
                 push_str!(permission);
-                params.push(Json::Boolean(*default));
+                params.push(JsonValue::Bool(*default));
                 if !scope.is_any() {
                     obj.insert("scope".to_string(), scope.to_json());
                 }
@@ -475,9 +475,9 @@ impl ToJson for Request {
         }
 
         if !params.is_empty() {
-            obj.insert("params".to_string(), Json::Array(params));
+            obj.insert("params".to_string(), JsonValue::Array(params));
         }
 
-        Json::Object(obj)
+        JsonValue::Object(obj)
     }
 }

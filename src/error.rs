@@ -1,4 +1,4 @@
-use rustc_serialize::json::ParserError as JsonParserError;
+use serde_json::error::Error as JsonError;
 use std::fmt::Error as FmtError;
 use std::fmt::{Display, Formatter};
 use std::io::Error as IoError;
@@ -61,7 +61,7 @@ impl ReceiveError {
 
 #[derive(Debug)]
 pub enum Error {
-    JsonParserError(JsonParserError),
+    JsonParserError(JsonError),
     IoError(IoError),
     Utf8Error(Utf8Error),
     InvalidJsonError(InvalidJsonError),
@@ -80,8 +80,8 @@ impl From<Utf8Error> for Error {
     }
 }
 
-impl From<JsonParserError> for Error {
-    fn from(err: JsonParserError) -> Error {
+impl From<JsonError> for Error {
+    fn from(err: JsonError) -> Error {
         Error::JsonParserError(err)
     }
 }
